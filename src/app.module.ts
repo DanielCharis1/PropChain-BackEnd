@@ -17,9 +17,9 @@ import { FilesModule } from './files/files.module';
 import { ValuationModule } from './valuation/valuation.module';
 import { ApiKeysModule } from './api-keys/api-keys.module';
 import { AuthRateLimitMiddleware } from './auth/middleware/auth.middleware';
-import { PropertiesModule } from './properties/properties.module';
 import configuration from './config/configuration';
 import valuationConfig from './config/valuation.config';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
