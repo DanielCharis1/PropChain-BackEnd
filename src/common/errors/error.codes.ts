@@ -61,17 +61,11 @@ export enum ErrorCode {
   INVALID_STATE = 'INVALID_STATE',
 }
 
-
-
-
-
 export const ErrorMessages: Record<ErrorCode, string> = {
   // General / Server
-  [ErrorCode.INTERNAL_SERVER_ERROR]:
-    'An unexpected error occurred. Please try again later',
+  [ErrorCode.INTERNAL_SERVER_ERROR]: 'An unexpected error occurred. Please try again later',
   [ErrorCode.DATABASE_ERROR]: 'A database error occurred',
-  [ErrorCode.EXTERNAL_SERVICE_ERROR]:
-    'An external service is currently unavailable',
+  [ErrorCode.EXTERNAL_SERVICE_ERROR]: 'An external service is currently unavailable',
 
   // Request / Validation
   [ErrorCode.BAD_REQUEST]: 'The request is invalid',
@@ -79,18 +73,14 @@ export const ErrorMessages: Record<ErrorCode, string> = {
   [ErrorCode.INVALID_INPUT]: 'The input data contains invalid values',
   [ErrorCode.MISSING_REQUIRED_FIELD]: 'Required field is missing',
   [ErrorCode.INVALID_FORMAT]: 'The data format is incorrect',
-  [ErrorCode.UNPROCESSABLE_ENTITY]:
-    'The request was well-formed but could not be processed',
+  [ErrorCode.UNPROCESSABLE_ENTITY]: 'The request was well-formed but could not be processed',
 
   // Authentication
   [ErrorCode.UNAUTHORIZED]: 'You are not authorized to access this resource',
-  [ErrorCode.AUTHENTICATION_REQUIRED]:
-    'Authentication is required to access this resource',
+  [ErrorCode.AUTHENTICATION_REQUIRED]: 'Authentication is required to access this resource',
 
-  [ErrorCode.INVALID_CREDENTIALS]:
-    'The provided credentials are invalid',
-  [ErrorCode.TOKEN_EXPIRED]:
-    'Your session has expired. Please login again',
+  [ErrorCode.INVALID_CREDENTIALS]: 'The provided credentials are invalid',
+  [ErrorCode.TOKEN_EXPIRED]: 'Your session has expired. Please login again',
   [ErrorCode.TOKEN_INVALID]: 'Invalid authentication token',
 
   // Explicit / legacy auth errors
@@ -98,36 +88,26 @@ export const ErrorMessages: Record<ErrorCode, string> = {
   [ErrorCode.AUTH_USER_NOT_FOUND]: 'User not found',
   [ErrorCode.AUTH_TOKEN_EXPIRED]: 'Authentication token has expired',
   [ErrorCode.AUTH_TOKEN_INVALID]: 'Authentication token is invalid',
-  [ErrorCode.AUTH_ACCOUNT_LOCKED]:
-    'Your account has been locked for security reasons',
+  [ErrorCode.AUTH_ACCOUNT_LOCKED]: 'Your account has been locked for security reasons',
 
   // Authorization
-  [ErrorCode.FORBIDDEN]:
-    'You do not have permission to perform this action',
-  [ErrorCode.INSUFFICIENT_PERMISSIONS]:
-    'You lack the necessary permissions',
+  [ErrorCode.FORBIDDEN]: 'You do not have permission to perform this action',
+  [ErrorCode.INSUFFICIENT_PERMISSIONS]: 'You lack the necessary permissions',
   [ErrorCode.ACCESS_DENIED]: 'Access to this resource is denied',
 
   // Resource / Conflict
   [ErrorCode.NOT_FOUND]: 'The requested resource was not found',
-  [ErrorCode.RESOURCE_NOT_FOUND]:
-    'The specified resource does not exist',
+  [ErrorCode.RESOURCE_NOT_FOUND]: 'The specified resource does not exist',
   [ErrorCode.USER_NOT_FOUND]: 'User not found',
   [ErrorCode.PROPERTY_NOT_FOUND]: 'Property not found',
 
-  [ErrorCode.CONFLICT]:
-    'A conflict occurred while processing your request',
+  [ErrorCode.CONFLICT]: 'A conflict occurred while processing your request',
   [ErrorCode.DUPLICATE_ENTRY]: 'This entry already exists',
-  [ErrorCode.RESOURCE_ALREADY_EXISTS]:
-    'A resource with this identifier already exists',
+  [ErrorCode.RESOURCE_ALREADY_EXISTS]: 'A resource with this identifier already exists',
 
   // Business Logic
-  [ErrorCode.TRANSACTION_FAILED]:
-    'The transaction could not be completed',
-  [ErrorCode.BUSINESS_RULE_VIOLATION]:
-    'This operation violates business rules',
-  [ErrorCode.OPERATION_NOT_ALLOWED]:
-    'This operation is not allowed',
-  [ErrorCode.INVALID_STATE]:
-    'The resource is in an invalid state for this operation',
+  [ErrorCode.TRANSACTION_FAILED]: 'The transaction could not be completed',
+  [ErrorCode.BUSINESS_RULE_VIOLATION]: 'This operation violates business rules',
+  [ErrorCode.OPERATION_NOT_ALLOWED]: 'This operation is not allowed',
+  [ErrorCode.INVALID_STATE]: 'The resource is in an invalid state for this operation',
 };

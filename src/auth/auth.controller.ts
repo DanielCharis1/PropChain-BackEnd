@@ -82,10 +82,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Invalid or expired reset token.', type: ErrorResponseDto })
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(
-      resetPasswordDto.token,
-      resetPasswordDto.newPassword,
-    );
+    return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.newPassword);
   }
 
   @Get('verify-email/:token')

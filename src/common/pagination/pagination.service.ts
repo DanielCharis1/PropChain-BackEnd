@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PaginationQueryDto,
-  PaginationMetadataDto,
-  PaginatedResponseDto,
-} from './pagination.dto';
+import { PaginationQueryDto, PaginationMetadataDto, PaginatedResponseDto } from './pagination.dto';
 
 /**
  * Interface for paginated data sources
@@ -23,15 +19,9 @@ export class PaginationService {
   /**
    * Calculate skip/take for DB queries
    */
-  calculatePagination(
-    page: number = this.defaultPage,
-    limit: number = this.defaultLimit,
-  ) {
+  calculatePagination(page: number = this.defaultPage, limit: number = this.defaultLimit) {
     const validPage = Math.max(page, this.defaultPage);
-    const validLimit = Math.max(
-      Math.min(limit, this.maxLimit),
-      this.minLimit,
-    );
+    const validLimit = Math.max(Math.min(limit, this.maxLimit), this.minLimit);
 
     return {
       skip: (validPage - 1) * validLimit,
@@ -101,35 +91,20 @@ export class PaginationService {
   /**
    * Format paginated API response
    */
-  formatResponse<T>(
-    data: T[],
-    total: number,
-    query: PaginationQueryDto,
-  ): PaginatedResponseDto<T> {
-    const { page, limit, sortBy, sortOrder } =
-      this.parsePaginationQuery(query);
+  formatResponse<T>(data: T[], total: number, query: PaginationQueryDto): PaginatedResponseDto<T> {
+    const { page, limit, sortBy, sortOrder } = this.parsePaginationQuery(query);
 
     return {
       data,
-      meta: this.createMetadata(
-        total,
-        page,
-        limit,
-        sortBy,
-        sortOrder,
-      ),
+      meta: this.createMetadata(total, page, limit, sortBy, sortOrder),
     };
   }
 
   /**
    * Build Prisma pagination options
    */
-  getPrismaOptions(
-    query: PaginationQueryDto,
-    fallbackSortField = 'createdAt',
-  ) {
-    const { page, limit, sortBy, sortOrder } =
-      this.parsePaginationQuery(query);
+  getPrismaOptions(query: PaginationQueryDto, fallbackSortField = 'createdAt') {
+    const { page, limit, sortBy, sortOrder } = this.parsePaginationQuery(query);
 
     const { skip, take } = this.calculatePagination(page, limit);
 

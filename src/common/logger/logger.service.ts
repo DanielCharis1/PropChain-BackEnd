@@ -65,13 +65,7 @@ export class LoggerService implements NestLoggerService {
     });
   }
 
-  logResponse(
-    method: string,
-    url: string,
-    statusCode: number,
-    duration: number,
-    userId?: string,
-  ): void {
+  logResponse(method: string, url: string, statusCode: number, duration: number, userId?: string): void {
     this.logger.info('HTTP Response', {
       method,
       url,
@@ -94,13 +88,7 @@ export class LoggerService implements NestLoggerService {
     });
   }
 
-  logBlockchainTransaction(
-    txHash: string,
-    from: string,
-    to: string,
-    value: string,
-    userId?: string,
-  ): void {
+  logBlockchainTransaction(txHash: string, from: string, to: string, value: string, userId?: string): void {
     this.logger.info('Blockchain Transaction', {
       txHash,
       from,
@@ -112,12 +100,7 @@ export class LoggerService implements NestLoggerService {
     });
   }
 
-  logSecurityEvent(
-    event: string,
-    details: any,
-    userId?: string,
-    ip?: string,
-  ): void {
+  logSecurityEvent(event: string, details: any, userId?: string, ip?: string): void {
     this.logger.warn('Security Event', {
       event,
       details,
@@ -128,12 +111,7 @@ export class LoggerService implements NestLoggerService {
     });
   }
 
-  logPerformance(
-    operation: string,
-    duration: number,
-    metadata?: any,
-    userId?: string,
-  ): void {
+  logPerformance(operation: string, duration: number, metadata?: any, userId?: string): void {
     this.logger.info('Performance Metric', {
       operation,
       duration,

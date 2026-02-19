@@ -39,7 +39,6 @@ export class ValuationService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
-    
   ) {
     this.externalApis = {
       zillow: {
@@ -62,7 +61,7 @@ export class ValuationService {
    */
   async getValuation(propertyId: string, features?: PropertyFeatures): Promise<ValuationResult> {
     const cacheKey = `valuation:${propertyId}`;
-    
+
     // Skip cache implementation for now since cache service is not available
 
     try {
@@ -71,7 +70,7 @@ export class ValuationService {
         const property = await this.prisma.property.findUnique({
           where: { id: propertyId },
         });
-        
+
         if (!property) {
           throw new NotFoundException(`Property with ID ${propertyId} not found`);
         }
@@ -112,10 +111,7 @@ export class ValuationService {
       const validValuations = valuations.filter(val => val !== null);
 
       if (validValuations.length === 0) {
-        throw new HttpException(
-          'All external valuation APIs failed',
-          HttpStatus.SERVICE_UNAVAILABLE,
-        );
+        throw new HttpException('All external valuation APIs failed', HttpStatus.SERVICE_UNAVAILABLE);
       }
 
       // Combine valuations using weighted average
@@ -130,7 +126,6 @@ export class ValuationService {
       // Cache implementation skipped since cache service is not available
 
       return savedValuation;
-
     } catch (error) {
       this.logger.error(`Valuation failed for property ${propertyId}: ${error.message}`);
       throw error;
@@ -149,19 +144,23 @@ export class ValuationService {
 
     try {
       // Mock implementation - in real scenario, this would call Zillow's actual API
-      const response = await axios.post(`${this.externalApis.zillow.baseUrl}/valuation`, {
-        address: features.location,
-        bedrooms: features.bedrooms,
-        bathrooms: features.bathrooms,
-        sqft: features.squareFootage,
-        yearBuilt: features.yearBuilt,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        `${this.externalApis.zillow.baseUrl}/valuation`,
+        {
+          address: features.location,
+          bedrooms: features.bedrooms,
+          bathrooms: features.bathrooms,
+          sqft: features.squareFootage,
+          yearBuilt: features.yearBuilt,
         },
-        timeout: this.configService.get('valuation.valuation.timeout'),
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: this.configService.get('valuation.valuation.timeout'),
+        },
+      );
 
       return {
         propertyId: features.id || 'unknown',
@@ -173,7 +172,6 @@ export class ValuationService {
         featuresUsed: features,
         rawData: response.data,
       };
-
     } catch (error) {
       this.logger.error(`Zillow API error: ${error.message}`);
       return null;
@@ -215,7 +213,6 @@ export class ValuationService {
         featuresUsed: features,
         rawData: response.data,
       };
-
     } catch (error) {
       this.logger.error(`Redfin API error: ${error.message}`);
       return null;
@@ -234,21 +231,25 @@ export class ValuationService {
 
     try {
       // Mock implementation - in real scenario, this would call CoreLogic's actual API
-      const response = await axios.post(`${this.externalApis.corelogic.baseUrl}/property-valuations`, {
-        property: {
-          address: features.location,
-          bedrooms: features.bedrooms,
-          bathrooms: features.bathrooms,
-          squareFootage: features.squareFootage,
-          yearBuilt: features.yearBuilt,
+      const response = await axios.post(
+        `${this.externalApis.corelogic.baseUrl}/property-valuations`,
+        {
+          property: {
+            address: features.location,
+            bedrooms: features.bedrooms,
+            bathrooms: features.bathrooms,
+            squareFootage: features.squareFootage,
+            yearBuilt: features.yearBuilt,
+          },
         },
-      }, {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: this.configService.get('valuation.valuation.timeout'),
         },
-        timeout: this.configService.get('valuation.valuation.timeout'),
-      });
+      );
 
       return {
         propertyId: features.id || 'unknown',
@@ -260,7 +261,6 @@ export class ValuationService {
         featuresUsed: features,
         rawData: response.data,
       };
-
     } catch (error) {
       this.logger.error(`CoreLogic API error: ${error.message}`);
       return null;
@@ -359,9 +359,7 @@ export class ValuationService {
       trendCounts[trend] = (trendCounts[trend] || 0) + 1;
     }
 
-    return Object.keys(trendCounts).reduce((a, b) => 
-      trendCounts[a] > trendCounts[b] ? a : b
-    );
+    return Object.keys(trendCounts).reduce((a, b) => (trendCounts[a] > trendCounts[b] ? a : b));
   }
 
   /**
@@ -404,7 +402,7 @@ export class ValuationService {
       valuationSource: valuation.source,
       lastValuationId: valuation.propertyId,
     };
-    
+
     // Only include estimatedValue if it's a number
     if (typeof valuation.estimatedValue === 'number') {
       updateData.estimatedValue = new Decimal(valuation.estimatedValue.toString());
@@ -443,7 +441,7 @@ export class ValuationService {
   async getMarketTrendAnalysis(location: string) {
     // This would typically integrate with market analysis APIs
     // For now, returning mock data
-    
+
     const valuations = await (this.prisma as any).propertyValuation?.findMany({
       where: {
         property: {
@@ -490,7 +488,9 @@ export class ValuationService {
   }
 
   private calculateTrendDirection(data: any[]) {
-    if (data.length < 2) return 'insufficient_data';
+    if (data.length < 2) {
+      return 'insufficient_data';
+    }
 
     const firstValue = data[0]._avg.estimatedValue;
     const lastValue = data[data.length - 1]._avg.estimatedValue;

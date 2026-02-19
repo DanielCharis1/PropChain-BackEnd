@@ -41,7 +41,7 @@ describe('Document Validation (e2e)', () => {
           page: 1,
           limit: 20,
         })
-        .expect((res) => {
+        .expect(res => {
           expect(res.status).not.toBe(400);
         });
     });
@@ -93,7 +93,7 @@ describe('Document Validation (e2e)', () => {
         .query({
           createdAfter: '2024-01-01T00:00:00.000Z',
         })
-        .expect((res) => {
+        .expect(res => {
           expect(res.status).not.toBe(400);
         });
     });
@@ -127,7 +127,7 @@ describe('Document Validation (e2e)', () => {
         .query({
           version: 1,
         })
-        .expect((res) => {
+        .expect(res => {
           expect(res.status).not.toBe(400);
         });
     });
@@ -202,7 +202,7 @@ describe('Document Validation (e2e)', () => {
           title: 'Updated Title',
           accessLevel: 'PUBLIC',
         })
-        .expect((res) => {
+        .expect(res => {
           expect(res.status).not.toBe(400);
         });
     });

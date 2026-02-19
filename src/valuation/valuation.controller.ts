@@ -16,7 +16,6 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { ValuationService, PropertyFeatures, ValuationResult } from './valuation.service';
 
-
 @ApiTags('valuation')
 @Controller('valuation')
 export class ValuationController {
@@ -95,7 +94,9 @@ export class ValuationController {
   })
   @ApiResponse({ status: 200, description: 'Batch valuations retrieved' })
   @HttpCode(HttpStatus.OK)
-  async getBatchValuations(@Body() requestBody: { properties: Array<{ propertyId: string; features?: PropertyFeatures }> }) {
+  async getBatchValuations(
+    @Body() requestBody: { properties: Array<{ propertyId: string; features?: PropertyFeatures }> },
+  ) {
     const results = [];
     for (const item of requestBody.properties) {
       try {

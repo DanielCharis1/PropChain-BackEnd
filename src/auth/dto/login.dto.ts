@@ -54,7 +54,7 @@ export class LoginDto {
     description: 'User email address (required for email login)',
     example: 'john.doe@example.com',
   })
-  @ValidateIf((o) => !o.walletAddress)
+  @ValidateIf(o => !o.walletAddress)
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty({ message: 'Email is required when not using Web3 login' })
   email?: string;
@@ -63,7 +63,7 @@ export class LoginDto {
     description: 'User password (required for email login)',
     example: 'SecureP@ss123',
   })
-  @ValidateIf((o) => !o.walletAddress)
+  @ValidateIf(o => !o.walletAddress)
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required when not using Web3 login' })
   password?: string;
@@ -72,7 +72,7 @@ export class LoginDto {
     description: 'Ethereum wallet address (required for Web3 login)',
     example: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
   })
-  @ValidateIf((o) => !o.email)
+  @ValidateIf(o => !o.email)
   @IsEthereumAddress({ message: 'Invalid Ethereum wallet address' })
   @IsNotEmpty({ message: 'Wallet address is required for Web3 login' })
   walletAddress?: string;
@@ -81,7 +81,7 @@ export class LoginDto {
     description: 'Signature from wallet (required for Web3 login)',
     example: '0x...',
   })
-  @ValidateIf((o) => !o.email)
+  @ValidateIf(o => !o.email)
   @IsString({ message: 'Signature must be a string' })
   @IsNotEmpty({ message: 'Signature is required for Web3 login' })
   signature?: string;

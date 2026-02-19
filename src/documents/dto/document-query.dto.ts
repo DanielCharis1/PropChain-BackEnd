@@ -78,7 +78,4 @@ export class DocumentFilterDto {
   search?: string;
 }
 
-export class DocumentQueryDto extends IntersectionType(
-  DocumentFilterDto,
-  PaginationDto,
-) {}
+export class DocumentQueryDto extends IntersectionType(DocumentFilterDto, PaginationDto) {}

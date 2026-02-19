@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -40,29 +36,16 @@ export class AuthService {
     }
   }
 
-  async login(credentials: {
-    email?: string;
-    password?: string;
-    walletAddress?: string;
-    signature?: string;
-  }) {
+  async login(credentials: { email?: string; password?: string; walletAddress?: string; signature?: string }) {
     let user: any;
 
     try {
       if (credentials.email && credentials.password) {
-        user = await this.validateUserByEmail(
-          credentials.email,
-          credentials.password,
-        );
+        user = await this.validateUserByEmail(credentials.email, credentials.password);
       } else if (credentials.walletAddress) {
-        user = await this.validateUserByWallet(
-          credentials.walletAddress,
-          credentials.signature,
-        );
+        user = await this.validateUserByWallet(credentials.walletAddress, credentials.signature);
       } else {
-        throw new BadRequestException(
-          'Email/password or wallet address/signature required',
-        );
+        throw new BadRequestException('Email/password or wallet address/signature required');
       }
 
       if (!user) {
@@ -98,10 +81,7 @@ export class AuthService {
     return result;
   }
 
-  async validateUserByWallet(
-    walletAddress: string,
-    signature?: string,
-  ): Promise<any> {
+  async validateUserByWallet(walletAddress: string, signature?: string): Promise<any> {
     let user = await this.userService.findByWalletAddress(walletAddress);
 
     if (!user) {
@@ -133,9 +113,7 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
 
-      const storedToken = await this.redisService.get(
-        `refresh_token:${payload.sub}`,
-      );
+      const storedToken = await this.redisService.get(`refresh_token:${payload.sub}`);
       if (storedToken !== refreshToken) {
         this.logger.warn('Refresh token validation failed: Invalid token', {
           userId: payload.sub,
@@ -179,9 +157,7 @@ export class AuthService {
   }
 
   async resetPassword(resetToken: string, newPassword: string) {
-    const resetData = await this.redisService.get(
-      `password_reset:${resetToken}`,
-    );
+    const resetData = await this.redisService.get(`password_reset:${resetToken}`);
 
     if (!resetData) {
       this.logger.warn('Invalid or expired password reset token received');
@@ -204,9 +180,7 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    const verificationData = await this.redisService.get(
-      `email_verification:${token}`,
-    );
+    const verificationData = await this.redisService.get(`email_verification:${token}`);
 
     if (!verificationData) {
       this.logger.warn('Invalid or expired email verification token');
@@ -255,21 +229,14 @@ export class AuthService {
 
     // Save token in Redis
     const expiry = Date.now() + 3600000; // 1 hour
-    await this.redisService.set(
-      `email_verification:${verificationToken}`,
-      JSON.stringify({ userId, expiry }),
-    );
+    await this.redisService.set(`email_verification:${verificationToken}`, JSON.stringify({ userId, expiry }));
 
     this.logger.log(`Verification email sent to ${email}`, { userId });
-    console.log(
-      `Verification email sent to ${email} with token: ${verificationToken}`,
-    );
+    console.log(`Verification email sent to ${email} with token: ${verificationToken}`);
   }
 
   private async sendPasswordResetEmail(email: string, resetToken: string) {
     this.logger.log(`Password reset email sent to ${email}`);
-    console.log(
-      `Password reset email sent to ${email} with token: ${resetToken}`,
-    );
+    console.log(`Password reset email sent to ${email} with token: ${resetToken}`);
   }
 }

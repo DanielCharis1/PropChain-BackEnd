@@ -12,31 +12,27 @@ export class ApiKeyGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    
+
     const apiKey = this.extractApiKey(request);
-    
+
     if (!apiKey) {
       throw new UnauthorizedException('API key is required');
     }
 
     const apiKeyData = await this.apiKeyService.validateApiKey(apiKey);
-    
+
     request.apiKey = apiKeyData;
 
-    const requiredScopes = this.reflector.getAllAndOverride<string[]>(
-      REQUIRED_SCOPES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredScopes = this.reflector.getAllAndOverride<string[]>(REQUIRED_SCOPES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     if (requiredScopes && requiredScopes.length > 0) {
-      const hasRequiredScopes = requiredScopes.every(scope =>
-        apiKeyData.scopes.includes(scope),
-      );
+      const hasRequiredScopes = requiredScopes.every(scope => apiKeyData.scopes.includes(scope));
 
       if (!hasRequiredScopes) {
-        throw new UnauthorizedException(
-          `Insufficient permissions. Required scopes: ${requiredScopes.join(', ')}`,
-        );
+        throw new UnauthorizedException(`Insufficient permissions. Required scopes: ${requiredScopes.join(', ')}`);
       }
     }
 
@@ -45,7 +41,7 @@ export class ApiKeyGuard implements CanActivate {
 
   private extractApiKey(request: any): string | null {
     const authHeader = request.headers['authorization'];
-    
+
     if (!authHeader) {
       return request.headers['x-api-key'] || null;
     }

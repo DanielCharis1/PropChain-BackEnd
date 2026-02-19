@@ -1,12 +1,4 @@
-import {
-  IsEmail,
-  IsString,
-  IsOptional,
-  MinLength,
-  IsNotEmpty,
-  MaxLength,
-  Matches,
-} from 'class-validator';
+import { IsEmail, IsString, IsOptional, MinLength, IsNotEmpty, MaxLength, Matches } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEthereumAddress } from '../../common/validators/is-ethereum-address.validator';
 import { IsStrongPassword } from '../../common/validators/is-strong-password.validator';

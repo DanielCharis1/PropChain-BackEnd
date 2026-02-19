@@ -26,26 +26,30 @@ const SENSITIVE_KEYS = [
  * Filter sensitive data from log objects
  */
 export const filterSensitiveData = (obj: any): any => {
-  if (obj === null || obj === undefined) return obj;
-  
-  if (typeof obj !== 'object') return obj;
-  
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+
+  if (typeof obj !== 'object') {
+    return obj;
+  }
+
   if (Array.isArray(obj)) {
     return obj.map(item => filterSensitiveData(item));
   }
 
   const newObj = { ...obj };
-  
+
   for (const key in newObj) {
     const lowerKey = key.toLowerCase();
-    
+
     if (SENSITIVE_KEYS.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
       newObj[key] = '[REDACTED]';
     } else if (typeof newObj[key] === 'object') {
       newObj[key] = filterSensitiveData(newObj[key]);
     }
   }
-  
+
   return newObj;
 };
 
@@ -53,10 +57,10 @@ export const filterSensitiveData = (obj: any): any => {
  * Custom format for sensitive data redaction
  */
 const redactFormat = () => {
-  return winston.format((info) => {
+  return winston.format(info => {
     // Redact common sensitive fields
     const redactedInfo = { ...info };
-    
+
     // Redact nested data in 'meta' or 'data' fields
     if (redactedInfo.meta) {
       redactedInfo.meta = filterSensitiveData(redactedInfo.meta);
@@ -67,7 +71,7 @@ const redactFormat = () => {
     if (redactedInfo.body) {
       redactedInfo.body = filterSensitiveData(redactedInfo.body);
     }
-    
+
     // Redact direct properties
     for (const key in redactedInfo) {
       const lowerKey = key.toLowerCase();
@@ -75,7 +79,7 @@ const redactFormat = () => {
         redactedInfo[key] = '[REDACTED]';
       }
     }
-    
+
     return redactedInfo;
   });
 };
@@ -85,7 +89,7 @@ const redactFormat = () => {
  */
 export const createWinstonLogger = (environment: string): winston.Logger => {
   const isProduction = environment === 'production';
-  
+
   return winston.createLogger({
     level: process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug'),
     format: winston.format.combine(

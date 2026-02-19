@@ -28,9 +28,7 @@ describe('Pagination Performance Tests', () => {
     it('should return first page within threshold', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?page=1&limit=10')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=1&limit=10').expect(200);
 
       const duration = performance.now() - start;
 
@@ -41,9 +39,7 @@ describe('Pagination Performance Tests', () => {
     it('should return middle page within threshold', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?page=500&limit=10')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=500&limit=10').expect(200);
 
       const duration = performance.now() - start;
 
@@ -54,9 +50,7 @@ describe('Pagination Performance Tests', () => {
     it('should return last page within threshold', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?page=1000&limit=10')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=1000&limit=10').expect(200);
 
       const duration = performance.now() - start;
 
@@ -69,9 +63,7 @@ describe('Pagination Performance Tests', () => {
     it('should handle small page size efficiently', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?page=1&limit=10')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=1&limit=10').expect(200);
 
       const duration = performance.now() - start;
 
@@ -82,9 +74,7 @@ describe('Pagination Performance Tests', () => {
     it('should handle medium page size efficiently', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?page=1&limit=50')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=1&limit=50').expect(200);
 
       const duration = performance.now() - start;
 
@@ -95,9 +85,7 @@ describe('Pagination Performance Tests', () => {
     it('should handle large page size efficiently', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?page=1&limit=100')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?page=1&limit=100').expect(200);
 
       const duration = performance.now() - start;
 
@@ -110,9 +98,7 @@ describe('Pagination Performance Tests', () => {
     it('should handle sorting by indexed field efficiently', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?sortBy=id&sortOrder=ASC&limit=50')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?sortBy=id&sortOrder=ASC&limit=50').expect(200);
 
       const duration = performance.now() - start;
 
@@ -123,9 +109,7 @@ describe('Pagination Performance Tests', () => {
     it('should handle sorting by non-indexed field', async () => {
       const start = performance.now();
 
-      await request(app.getHttpServer())
-        .get('/users?sortBy=name&sortOrder=DESC&limit=50')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users?sortBy=name&sortOrder=DESC&limit=50').expect(200);
 
       const duration = performance.now() - start;
 
@@ -143,7 +127,7 @@ describe('Pagination Performance Tests', () => {
       const requests = Array.from({ length: concurrentRequests }, (_, i) =>
         request(app.getHttpServer())
           .get(`/users?page=${i + 1}&limit=10`)
-          .expect(200)
+          .expect(200),
       );
 
       await Promise.all(requests);
@@ -161,9 +145,7 @@ describe('Pagination Performance Tests', () => {
       // This test requires query logging to be enabled
       // You would need to configure your ORM to log queries
 
-      const response = await request(app.getHttpServer())
-        .get('/users?page=1&limit=10')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?page=1&limit=10').expect(200);
 
       expect(response.body.data).toHaveLength(10);
 
@@ -183,9 +165,7 @@ describe('Pagination Performance Tests', () => {
 
       // Request multiple pages
       for (let page = 1; page <= 10; page++) {
-        await request(app.getHttpServer())
-          .get(`/users?page=${page}&limit=100`)
-          .expect(200);
+        await request(app.getHttpServer()).get(`/users?page=${page}&limit=100`).expect(200);
       }
 
       const memAfter = process.memoryUsage().heapUsed;

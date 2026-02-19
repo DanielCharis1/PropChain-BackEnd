@@ -21,10 +21,7 @@ export class HealthController {
   @ApiResponse({ status: 200, description: 'Service is healthy' })
   @ApiResponse({ status: 503, description: 'Service is unhealthy' })
   check() {
-    return this.health.check([
-      () => this.dbHealth.isHealthy('database'),
-      () => this.redisHealth.isHealthy('redis'),
-    ]);
+    return this.health.check([() => this.dbHealth.isHealthy('database'), () => this.redisHealth.isHealthy('redis')]);
   }
 
   @Get('detailed')
@@ -57,9 +54,6 @@ export class HealthController {
   @ApiResponse({ status: 200, description: 'Service is ready to accept traffic' })
   @ApiResponse({ status: 503, description: 'Service is not ready' })
   readiness() {
-    return this.health.check([
-      () => this.dbHealth.isHealthy('database'),
-      () => this.redisHealth.isHealthy('redis'),
-    ]);
+    return this.health.check([() => this.dbHealth.isHealthy('database'), () => this.redisHealth.isHealthy('redis')]);
   }
 }

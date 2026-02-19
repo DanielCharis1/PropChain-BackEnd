@@ -181,6 +181,7 @@ export class CreatePropertyDto {
   })
   @IsOptional()
   @IsNumber({}, { message: 'Area must be a number' })
-  @IsPositive({ message: 'Area must be positive' })
+  @Min(0, { message: 'Area cannot be negative' })
+  @Max(1000000, { message: 'Area cannot exceed 1,000,000 sq ft' })
   areaSqFt?: number;
 }

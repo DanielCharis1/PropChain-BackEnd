@@ -257,9 +257,7 @@ describe('ApiKeyService', () => {
     it('should throw UnauthorizedException for non-existent key', async () => {
       mockPrismaService.apiKey.findFirst.mockResolvedValue(null);
 
-      await expect(service.validateApiKey('propchain_live_nonexistent')).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.validateApiKey('propchain_live_nonexistent')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException when rate limit exceeded', async () => {
@@ -280,9 +278,7 @@ describe('ApiKeyService', () => {
       mockPrismaService.apiKey.findFirst.mockResolvedValue(mockApiKey);
       mockRedisService.get.mockResolvedValue('60');
 
-      await expect(
-        service.validateApiKey('propchain_live_abc123xyz'),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.validateApiKey('propchain_live_abc123xyz')).rejects.toThrow(UnauthorizedException);
     });
   });
 });

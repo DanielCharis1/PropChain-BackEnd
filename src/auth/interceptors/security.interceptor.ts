@@ -6,14 +6,14 @@ import { map } from 'rxjs/operators';
 export class SecurityInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => {
+      map(data => {
         // Sanitize response data to remove sensitive information
         if (data && typeof data === 'object') {
           // Remove password fields from responses
           if (data.password) {
             delete data.password;
           }
-          
+
           // If it's an array, sanitize each item
           if (Array.isArray(data)) {
             return data.map(item => {
@@ -25,7 +25,7 @@ export class SecurityInterceptor implements NestInterceptor {
             });
           }
         }
-        
+
         return data;
       }),
     );

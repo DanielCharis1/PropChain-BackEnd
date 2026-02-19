@@ -1,12 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-  Logger,
-  Inject,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import { ErrorResponseDto } from './error.dto';
@@ -28,7 +20,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const requestId = request.headers['x-request-id'] as string || uuidv4();
+    const requestId = (request.headers['x-request-id'] as string) || uuidv4();
 
     let errorResponse: ErrorResponseDto;
 
@@ -39,36 +31,29 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     // Log the error
-    this.logger.error(
-      `Error occurred: ${errorResponse.errorCode} - ${errorResponse.message}`,
-      {
-        requestId,
-        path: request.url,
-        method: request.method,
-        statusCode: errorResponse.statusCode,
-        details: errorResponse.details,
-        stack: exception instanceof Error ? exception.stack : undefined,
-      },
-    );
+    this.logger.error(`Error occurred: ${errorResponse.errorCode} - ${errorResponse.message}`, {
+      requestId,
+      path: request.url,
+      method: request.method,
+      statusCode: errorResponse.statusCode,
+      details: errorResponse.details,
+      stack: exception instanceof Error ? exception.stack : undefined,
+    });
 
     response.status(errorResponse.statusCode).json(errorResponse);
   }
 
-  private handleHttpException(
-    exception: HttpException,
-    request: Request,
-    requestId: string,
-  ): ErrorResponseDto {
+  private handleHttpException(exception: HttpException, request: Request, requestId: string): ErrorResponseDto {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
-    
+
     let errorCode: ErrorCode;
     let message: string;
     let details: string[] | undefined;
 
     if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
       const responseObj = exceptionResponse as any;
-      
+
       // Handle validation errors
       if (Array.isArray(responseObj.message)) {
         errorCode = ErrorCode.VALIDATION_ERROR;
@@ -94,20 +79,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     });
   }
 
-  private handleUnknownException(
-    exception: unknown,
-    request: Request,
-    requestId: string,
-  ): ErrorResponseDto {
+  private handleUnknownException(exception: unknown, request: Request, requestId: string): ErrorResponseDto {
     const status = HttpStatus.INTERNAL_SERVER_ERROR;
     const errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
     const message = ErrorMessages[errorCode];
 
     // In production, don't expose internal error details
     const details =
-      process.env.NODE_ENV !== 'production' && exception instanceof Error
-        ? [exception.message]
-        : undefined;
+      process.env.NODE_ENV !== 'production' && exception instanceof Error ? [exception.message] : undefined;
 
     return new ErrorResponseDto({
       statusCode: status,

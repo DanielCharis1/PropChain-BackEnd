@@ -164,16 +164,13 @@ describe('Property Validation (e2e)', () => {
           unknownField: 'value',
         })
         .expect(400)
-        .expect((res) => {
+        .expect(res => {
           expect(JSON.stringify(res.body.message)).toContain('should not exist');
         });
     });
 
     it('should reject missing required fields', () => {
-      return request(app.getHttpServer())
-        .post('/properties')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/properties').send({}).expect(400);
     });
   });
 
@@ -189,7 +186,7 @@ describe('Property Validation (e2e)', () => {
           minPrice: 100000,
           maxPrice: 500000,
         })
-        .expect((res) => {
+        .expect(res => {
           expect(res.status).not.toBe(400);
         });
     });

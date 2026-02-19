@@ -53,13 +53,15 @@ describe('ValuationController', () => {
   describe('getPropertyHistory', () => {
     it('should call valuation service to get property history', async () => {
       const propertyId = 'test-property-id';
-      const expectedResult = [{
-        propertyId,
-        estimatedValue: 500000,
-        confidenceScore: 0.85,
-        valuationDate: new Date(),
-        source: 'combined',
-      }];
+      const expectedResult = [
+        {
+          propertyId,
+          estimatedValue: 500000,
+          confidenceScore: 0.85,
+          valuationDate: new Date(),
+          source: 'combined',
+        },
+      ];
 
       jest.spyOn(service, 'getPropertyHistory').mockResolvedValue(expectedResult);
 

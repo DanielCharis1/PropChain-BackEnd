@@ -19,9 +19,9 @@ describe('ApiKeysController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-    
+
     prismaService = moduleFixture.get<PrismaService>(PrismaService);
-    
+
     await app.init();
 
     authToken = await getAuthToken();
@@ -52,9 +52,7 @@ describe('ApiKeysController (e2e)', () => {
       // User might already exist
     }
 
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send(testUser);
+    const loginResponse = await request(app.getHttpServer()).post('/auth/login').send(testUser);
 
     return loginResponse.body.access_token;
   }
@@ -105,10 +103,7 @@ describe('ApiKeysController (e2e)', () => {
         scopes: [ApiKeyScope.READ_PROPERTIES],
       };
 
-      await request(app.getHttpServer())
-        .post('/api-keys')
-        .send(createDto)
-        .expect(401);
+      await request(app.getHttpServer()).post('/api-keys').send(createDto).expect(401);
     });
   });
 
@@ -121,17 +116,15 @@ describe('ApiKeysController (e2e)', () => {
 
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body.length).toBeGreaterThanOrEqual(1);
-      
-      const apiKey = response.body.find((k) => k.id === createdApiKeyId);
+
+      const apiKey = response.body.find(k => k.id === createdApiKeyId);
       expect(apiKey).toBeDefined();
       expect(apiKey).not.toHaveProperty('key');
       expect(apiKey).toHaveProperty('keyPrefix');
     });
 
     it('should return 401 without authentication', async () => {
-      await request(app.getHttpServer())
-        .get('/api-keys')
-        .expect(401);
+      await request(app.getHttpServer()).get('/api-keys').expect(401);
     });
   });
 
@@ -230,25 +223,19 @@ describe('ApiKeysController (e2e)', () => {
     });
 
     it('should authenticate with valid API key in Authorization header', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/health')
-        .set('Authorization', `Bearer ${testApiKey}`);
+      const response = await request(app.getHttpServer()).get('/health').set('Authorization', `Bearer ${testApiKey}`);
 
       expect(response.status).not.toBe(401);
     });
 
     it('should authenticate with valid API key in x-api-key header', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/health')
-        .set('x-api-key', testApiKey);
+      const response = await request(app.getHttpServer()).get('/health').set('x-api-key', testApiKey);
 
       expect(response.status).not.toBe(401);
     });
 
     it('should reject invalid API key', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/properties')
-        .set('x-api-key', 'propchain_live_invalid');
+      const response = await request(app.getHttpServer()).get('/properties').set('x-api-key', 'propchain_live_invalid');
 
       expect(response.status).toBe(401);
     });

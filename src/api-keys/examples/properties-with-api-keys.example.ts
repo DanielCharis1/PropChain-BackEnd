@@ -1,6 +1,6 @@
 /**
  * EXAMPLE: How to protect routes with API Key authentication
- * 
+ *
  * This is a sample implementation showing how to use the API key
  * authentication system in your controllers.
  */
@@ -95,9 +95,9 @@ export class PropertiesExampleController {
 
 /**
  * USAGE EXAMPLES:
- * 
+ *
  * 1. Create an API key via the management endpoint:
- * 
+ *
  *    POST /api-keys
  *    Authorization: Bearer <JWT_TOKEN>
  *    {
@@ -105,26 +105,26 @@ export class PropertiesExampleController {
  *      "scopes": ["read:properties", "write:properties"],
  *      "rateLimit": 100
  *    }
- * 
+ *
  * 2. Use the API key to access protected endpoints:
- * 
+ *
  *    GET /properties
  *    X-API-Key: propchain_live_abc123def456...
- * 
+ *
  *    or
- * 
+ *
  *    GET /properties
  *    Authorization: Bearer propchain_live_abc123def456...
- * 
+ *
  * 3. The API key is validated automatically:
  *    - Format check (must start with 'propchain_')
  *    - Active status (not revoked)
  *    - Rate limit check
  *    - Scope verification (if @ApiKeyScopes decorator is used)
  *    - Usage tracking (increments requestCount, updates lastUsedAt)
- * 
+ *
  * 4. Access the API key data in your handler:
- * 
+ *
  *    @Get()
  *    @UseGuards(ApiKeyGuard)
  *    myHandler(@Req() req) {

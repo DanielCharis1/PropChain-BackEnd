@@ -14,9 +14,7 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
     const { walletAddress, signature } = req.body;
 
     if (!walletAddress || !signature) {
-      throw new UnauthorizedException(
-        'Wallet address and signature are required',
-      );
+      throw new UnauthorizedException('Wallet address and signature are required');
     }
 
     // Verify the signature
@@ -41,19 +39,13 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
     return user;
   }
 
-  private async verifySignature(
-    walletAddress: string,
-    signature: string,
-  ): Promise<boolean> {
+  private async verifySignature(walletAddress: string, signature: string): Promise<boolean> {
     try {
       // NOTE: In production, use a nonce stored in Redis to prevent replay attacks
-      const message =
-        'Welcome to PropChain!\n\nClick to sign in and accept the Terms of Service.';
+      const message = 'Welcome to PropChain!\n\nClick to sign in and accept the Terms of Service.';
 
       const recoveredAddress = ethers.verifyMessage(message, signature);
-      return (
-        recoveredAddress.toLowerCase() === walletAddress.toLowerCase()
-      );
+      return recoveredAddress.toLowerCase() === walletAddress.toLowerCase();
     } catch (error) {
       console.error('Error verifying signature:', error);
       return false;

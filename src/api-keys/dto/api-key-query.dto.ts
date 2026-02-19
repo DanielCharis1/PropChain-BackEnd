@@ -15,7 +15,4 @@ export class ApiKeyFilterDto {
   isActive?: boolean;
 }
 
-export class ApiKeyQueryDto extends IntersectionType(
-  ApiKeyFilterDto,
-  PaginationDto,
-) {}
+export class ApiKeyQueryDto extends IntersectionType(ApiKeyFilterDto, PaginationDto) {}

@@ -107,7 +107,10 @@ describe('PaginationService', () => {
 
   describe('formatResponse', () => {
     it('should format response with data and metadata', () => {
-      const data = [{ id: 1, name: 'Item 1' }, { id: 2, name: 'Item 2' }];
+      const data = [
+        { id: 1, name: 'Item 1' },
+        { id: 2, name: 'Item 2' },
+      ];
       const query: PaginationQueryDto = { page: 1, limit: 10, sortBy: 'createdAt', sortOrder: 'desc' };
 
       const response = service.formatResponse(data, 100, query);

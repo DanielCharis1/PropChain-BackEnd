@@ -95,7 +95,4 @@ export class PropertyFilterDto {
   ownerId?: string;
 }
 
-export class PropertyQueryDto extends IntersectionType(
-  PropertyFilterDto,
-  IntersectionType(PaginationDto, SortDto),
-) {}
+export class PropertyQueryDto extends IntersectionType(PropertyFilterDto, IntersectionType(PaginationDto, SortDto)) {}

@@ -1,11 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
@@ -31,7 +24,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
         error = exception.constructor.name;
@@ -73,11 +66,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       // Log HTTP exceptions as warnings
-      this.loggerService.warn(
-        `HTTP Exception: ${exception.message}`,
-        AllExceptionsFilter.name,
-      );
-      
+      this.loggerService.warn(`HTTP Exception: ${exception.message}`, AllExceptionsFilter.name);
+
       this.loggerService.logSecurityEvent(
         'http_exception',
         {
@@ -93,7 +83,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // Log unexpected errors as errors
       const error = exception instanceof Error ? exception : new Error(String(exception));
       this.loggerService.logError(error, AllExceptionsFilter.name, userId);
-      
+
       this.loggerService.logSecurityEvent(
         'unhandled_exception',
         {

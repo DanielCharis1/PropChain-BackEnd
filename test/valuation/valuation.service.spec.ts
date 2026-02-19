@@ -135,11 +135,14 @@ describe('ValuationService', () => {
     });
 
     it('should return majority trend', () => {
-      const valuations = [
-        { marketTrend: 'upward' },
-        { marketTrend: 'upward' },
-        { marketTrend: 'downward' },
-      ].map(v => ({ ...v as any, propertyId: 'test', estimatedValue: 0, confidenceScore: 0, valuationDate: new Date(), source: 'test' }));
+      const valuations = [{ marketTrend: 'upward' }, { marketTrend: 'upward' }, { marketTrend: 'downward' }].map(v => ({
+        ...(v as any),
+        propertyId: 'test',
+        estimatedValue: 0,
+        confidenceScore: 0,
+        valuationDate: new Date(),
+        source: 'test',
+      }));
 
       const result = (service as any).getMarketTrendFromValuations(valuations);
       expect(result).toBe('upward');

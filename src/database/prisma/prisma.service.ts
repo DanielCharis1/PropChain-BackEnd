@@ -57,17 +57,17 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     }
 
     const models = Reflect.ownKeys(this).filter(
-      (key) => typeof key === 'string' && !key.startsWith('_') && !key.startsWith('$')
+      key => typeof key === 'string' && !key.startsWith('_') && !key.startsWith('$'),
     );
 
     return Promise.all(
-      models.map((modelKey) => {
+      models.map(modelKey => {
         const model = this[modelKey as string];
         if (model && typeof model.deleteMany === 'function') {
           return model.deleteMany();
         }
         return Promise.resolve();
-      })
+      }),
     );
   }
 
@@ -92,7 +92,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     options?: {
       maxRetries?: number;
       timeout?: number;
-    }
+    },
   ): Promise<T> {
     const maxRetries = options?.maxRetries ?? 3;
     const timeout = options?.timeout ?? 5000;
@@ -107,15 +107,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         });
       } catch (error) {
         lastError = error as Error;
-        this.logger.warn(
-          `Transaction attempt ${attempt}/${maxRetries} failed: ${lastError.message}`
-        );
+        this.logger.warn(`Transaction attempt ${attempt}/${maxRetries} failed: ${lastError.message}`);
 
         if (attempt < maxRetries) {
           // Exponential backoff
-          await new Promise((resolve) =>
-            setTimeout(resolve, Math.pow(2, attempt) * 100)
-          );
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 100));
         }
       }
     }

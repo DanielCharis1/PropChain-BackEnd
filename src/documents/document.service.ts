@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import * as crypto from 'crypto';
 import axios from 'axios';
@@ -63,9 +57,7 @@ export class InMemoryStorageProvider implements StorageProvider {
       .createHmac('sha256', this.config.signingSecret)
       .update(`${method}:${key}:${expiresAt}`)
       .digest('hex');
-    return `http://localhost/mock-storage/${encodeURIComponent(
-      key,
-    )}?expires=${expiresAt}&signature=${signature}`;
+    return `http://localhost/mock-storage/${encodeURIComponent(key)}?expires=${expiresAt}&signature=${signature}`;
   }
 
   getObject(key: string): StorageUploadRequest | undefined {
@@ -128,23 +120,10 @@ export class S3StorageProvider implements StorageProvider {
       'UNSIGNED-PAYLOAD',
     ].join('\n');
 
-    const stringToSign = [
-      'AWS4-HMAC-SHA256',
-      amzDate,
-      scope,
-      S3StorageProvider.hashHex(canonicalRequest),
-    ].join('\n');
+    const stringToSign = ['AWS4-HMAC-SHA256', amzDate, scope, S3StorageProvider.hashHex(canonicalRequest)].join('\n');
 
-    const signingKey = S3StorageProvider.getSignatureKey(
-      s3.secretAccessKey,
-      dateStamp,
-      s3.region,
-      's3',
-    );
-    const signature = crypto
-      .createHmac('sha256', signingKey)
-      .update(stringToSign)
-      .digest('hex');
+    const signingKey = S3StorageProvider.getSignatureKey(s3.secretAccessKey, dateStamp, s3.region, 's3');
+    const signature = crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex');
 
     queryParams.set('X-Amz-Signature', signature);
     const baseUrl = S3StorageProvider.buildBaseUrl(s3, this.config);
@@ -169,7 +148,7 @@ export class S3StorageProvider implements StorageProvider {
   private static buildCanonicalUri(bucket: string, key: string, forcePathStyle: boolean): string {
     const encodedKey = key
       .split('/')
-      .map((segment) => encodeURIComponent(segment))
+      .map(segment => encodeURIComponent(segment))
       .join('/');
     if (forcePathStyle) {
       return `/${bucket}/${encodedKey}`;
@@ -189,12 +168,7 @@ export class S3StorageProvider implements StorageProvider {
     return date.toISOString().slice(0, 10).replace(/-/g, '');
   }
 
-  private static getSignatureKey(
-    key: string,
-    dateStamp: string,
-    regionName: string,
-    serviceName: string,
-  ): Buffer {
+  private static getSignatureKey(key: string, dateStamp: string, regionName: string, serviceName: string): Buffer {
     const kDate = crypto.createHmac('sha256', `AWS4${key}`).update(dateStamp).digest();
     const kRegion = crypto.createHmac('sha256', kDate).update(regionName).digest();
     const kService = crypto.createHmac('sha256', kRegion).update(serviceName).digest();
@@ -204,17 +178,15 @@ export class S3StorageProvider implements StorageProvider {
 
 @Injectable()
 export class DocumentService {
-  private static readonly virusSignature =
-    'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+  private static readonly virusSignature = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
 
   private readonly logger = new Logger(DocumentService.name);
   private readonly documents = new Map<string, DocumentRecord>();
 
   constructor(
     @Inject(STORAGE_CONFIG) private readonly config: StorageConfig = storageConfig(),
-    @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider = new InMemoryStorageProvider(
-      storageConfig(),
-    ),
+    @Inject(STORAGE_PROVIDER)
+    private readonly storageProvider: StorageProvider = new InMemoryStorageProvider(storageConfig()),
   ) {}
 
   async uploadDocuments(
@@ -330,7 +302,7 @@ export class DocumentService {
       if (filters.createdBefore && document.createdAt > filters.createdBefore) {
         continue;
       }
-      if (tag && !document.metadata.tags.some((documentTag) => documentTag.toLowerCase() === tag)) {
+      if (tag && !document.metadata.tags.some(documentTag => documentTag.toLowerCase() === tag)) {
         continue;
       }
       if (filterText) {
@@ -359,9 +331,7 @@ export class DocumentService {
     this.assertContext(context);
     const document = this.getDocument(documentId, context);
     const version =
-      versionNumber === undefined
-        ? this.getCurrentVersion(document)
-        : this.getVersion(document, versionNumber);
+      versionNumber === undefined ? this.getCurrentVersion(document) : this.getVersion(document, versionNumber);
     const expiresInSeconds = this.config.signedUrlExpiresInSeconds;
     const url = this.storageProvider.getSignedUrl(version.storageKey, expiresInSeconds, 'GET');
     return {
@@ -467,7 +437,7 @@ export class DocumentService {
     context: DocumentAccessContext,
     preserveOwner = false,
   ): DocumentMetadata {
-    const tags = (input.tags || []).map((tag) => tag.trim()).filter(Boolean);
+    const tags = (input.tags || []).map(tag => tag.trim()).filter(Boolean);
     return {
       propertyId: input.propertyId,
       title: input.title || 'Untitled document',
@@ -487,7 +457,7 @@ export class DocumentService {
   }
 
   private getCurrentVersion(document: DocumentRecord): DocumentVersion {
-    const version = document.versions.find((item) => item.version === document.currentVersion);
+    const version = document.versions.find(item => item.version === document.currentVersion);
     if (!version) {
       throw new NotFoundException('Document version not found');
     }
@@ -495,7 +465,7 @@ export class DocumentService {
   }
 
   private getVersion(document: DocumentRecord, versionNumber: number): DocumentVersion {
-    const version = document.versions.find((item) => item.version === versionNumber);
+    const version = document.versions.find(item => item.version === versionNumber);
     if (!version) {
       throw new NotFoundException('Document version not found');
     }
@@ -521,7 +491,7 @@ export class DocumentService {
         return true;
       }
       const allowedRoles = new Set(document.metadata.allowedRoles);
-      return context.roles.some((role) => allowedRoles.has(role));
+      return context.roles.some(role => allowedRoles.has(role));
     }
     return false;
   }
@@ -531,7 +501,7 @@ export class DocumentService {
       return true;
     }
     const allowedRoles = new Set(document.metadata.allowedRoles);
-    return context.roles.some((role) => allowedRoles.has(role));
+    return context.roles.some(role => allowedRoles.has(role));
   }
 
   private ensureReadAccess(document: DocumentRecord, context: DocumentAccessContext): void {

@@ -1,11 +1,6 @@
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import {
-  UploadDocumentDto,
-  UpdateMetadataDto,
-  DocumentQueryDto,
-  DownloadQueryDto,
-} from '../../src/documents/dto';
+import { UploadDocumentDto, UpdateMetadataDto, DocumentQueryDto, DownloadQueryDto } from '../../src/documents/dto';
 import { DocumentType, DocumentAccessLevel } from '../../src/documents/document.model';
 
 describe('Document DTOs', () => {

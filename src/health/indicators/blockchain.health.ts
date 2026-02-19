@@ -17,7 +17,7 @@ export class BlockchainHealthIndicator extends HealthIndicator {
     try {
       const blockNumber = await this.provider.getBlockNumber();
       const network = await this.provider.getNetwork();
-      
+
       return this.getStatus(key, true, {
         message: 'Blockchain connection successful',
         blockNumber,
@@ -27,10 +27,7 @@ export class BlockchainHealthIndicator extends HealthIndicator {
         },
       });
     } catch (error) {
-      throw new HealthCheckError(
-        'Blockchain connection failed',
-        this.getStatus(key, false, { error: error.message }),
-      );
+      throw new HealthCheckError('Blockchain connection failed', this.getStatus(key, false, { error: error.message }));
     }
   }
 }

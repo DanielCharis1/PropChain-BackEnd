@@ -6,10 +6,7 @@ import { ValuationController } from './valuation.controller';
 import { PrismaModule } from '../database/prisma/prisma.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-
-  ],
+  imports: [PrismaModule],
   controllers: [ValuationController],
   providers: [ValuationService],
   exports: [ValuationService],

@@ -14,10 +14,10 @@ export class AuthRateLimitMiddleware implements NestMiddleware {
         standardHeaders: true,
         legacyHeaders: false,
       });
-      
+
       return limiter(req, res, next);
     }
-    
+
     next();
   }
 }

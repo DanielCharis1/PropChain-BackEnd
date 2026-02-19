@@ -30,19 +30,15 @@ describe('API Keys (e2e)', () => {
     prismaService = app.get<PrismaService>(PrismaService);
 
     const userEmail = `test-${Date.now()}@example.com`;
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        email: userEmail,
-        password: 'Password123!',
-      });
+    await request(app.getHttpServer()).post('/auth/register').send({
+      email: userEmail,
+      password: 'Password123!',
+    });
 
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: userEmail,
-        password: 'Password123!',
-      });
+    const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+      email: userEmail,
+      password: 'Password123!',
+    });
 
     authToken = loginResponse.body.access_token;
   });
@@ -207,24 +203,15 @@ describe('API Keys (e2e)', () => {
     });
 
     it('should authenticate with valid API key in Authorization header', async () => {
-      await request(app.getHttpServer())
-        .get('/health')
-        .set('Authorization', `Bearer ${testApiKey}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').set('Authorization', `Bearer ${testApiKey}`).expect(200);
     });
 
     it('should authenticate with valid API key in X-API-Key header', async () => {
-      await request(app.getHttpServer())
-        .get('/health')
-        .set('X-API-Key', testApiKey)
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').set('X-API-Key', testApiKey).expect(200);
     });
 
     it('should reject invalid API key format', async () => {
-      await request(app.getHttpServer())
-        .get('/health')
-        .set('X-API-Key', 'invalid-key-format')
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').set('X-API-Key', 'invalid-key-format').expect(200);
     });
 
     it('should reject revoked API key', async () => {
@@ -233,10 +220,7 @@ describe('API Keys (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(204);
 
-      await request(app.getHttpServer())
-        .get('/health')
-        .set('X-API-Key', testApiKey)
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').set('X-API-Key', testApiKey).expect(200);
     });
   });
 });

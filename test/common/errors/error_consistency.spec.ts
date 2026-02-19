@@ -15,13 +15,13 @@ describe('Error Response Consistency (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    
+
     const configService = app.get(ConfigService);
     const logger = app.get(StructuredLoggerService);
-    
+
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     app.useGlobalFilters(new AppExceptionFilter(configService, logger));
-    
+
     await app.init();
   });
 
@@ -33,7 +33,7 @@ describe('Error Response Consistency (e2e)', () => {
     return request(app.getHttpServer())
       .get('/non-existent-route')
       .expect(404)
-      .expect((res) => {
+      .expect(res => {
         expect(res.body).toHaveProperty('statusCode', 404);
         expect(res.body).toHaveProperty('message');
         expect(res.body).toHaveProperty('code', 'NOT_FOUND');
@@ -47,7 +47,7 @@ describe('Error Response Consistency (e2e)', () => {
       .post('/auth/login')
       .send({}) // Missing required fields
       .expect(400)
-      .expect((res) => {
+      .expect(res => {
         expect(res.body).toHaveProperty('statusCode', 400);
         expect(res.body).toHaveProperty('code', 'VALIDATION_ERROR');
         expect(res.body).toHaveProperty('details');

@@ -8,7 +8,9 @@ import {
 @ValidatorConstraint({ async: false })
 export class IsStrongPasswordConstraint implements ValidatorConstraintInterface {
   validate(value: unknown): boolean {
-    if (typeof value !== 'string') return false;
+    if (typeof value !== 'string') {
+      return false;
+    }
     // At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
     const hasMinLength = value.length >= 8;
     const hasUppercase = /[A-Z]/.test(value);
@@ -28,7 +30,7 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
-      propertyName: propertyName,
+      propertyName,
       options: validationOptions,
       constraints: [],
       validator: IsStrongPasswordConstraint,

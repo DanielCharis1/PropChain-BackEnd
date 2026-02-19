@@ -23,7 +23,7 @@ export class ApiKeyService {
   ) {
     this.encryptionKey = this.configService.get<string>('ENCRYPTION_KEY');
     this.globalRateLimit = this.configService.get<number>('API_KEY_RATE_LIMIT_PER_MINUTE', 60);
-    
+
     if (!this.encryptionKey) {
       throw new Error('ENCRYPTION_KEY must be set in environment variables');
     }
@@ -52,7 +52,9 @@ export class ApiKeyService {
     };
   }
 
-  async findAll(paginationQuery?: PaginationQueryDto): Promise<ApiKeyResponseDto[] | PaginatedResponseDto<ApiKeyResponseDto>> {
+  async findAll(
+    paginationQuery?: PaginationQueryDto,
+  ): Promise<ApiKeyResponseDto[] | PaginatedResponseDto<ApiKeyResponseDto>> {
     // If no pagination query provided, return all (for backward compatibility)
     if (!paginationQuery) {
       const apiKeys = await this.prisma.apiKey.findMany({
@@ -151,7 +153,7 @@ export class ApiKeyService {
     }
 
     const decryptedKey = this.decryptKey(apiKey.key);
-    
+
     if (decryptedKey !== plainKey) {
       throw new UnauthorizedException('Invalid API key');
     }
@@ -170,11 +172,11 @@ export class ApiKeyService {
   private async checkRateLimit(apiKey: any): Promise<void> {
     const limit = apiKey.rateLimit || this.globalRateLimit;
     const redisKey = `rate_limit:${apiKey.keyPrefix}`;
-    
+
     // Attempt to access the raw client property since getClient() doesn't exist
     // Usually in these wrappers, it's called 'client' or 'redis'
     const rawClient = (this.redis as any).client || (this.redis as any).redis;
-    
+
     const currentCount = await this.redis.get(redisKey);
     const count = currentCount ? parseInt(currentCount, 10) : 0;
 
@@ -191,7 +193,7 @@ export class ApiKeyService {
         await rawClient.incr(redisKey);
       }
     } else {
-      // Fallback if rawClient access fails: 
+      // Fallback if rawClient access fails:
       // Manual increment and reset logic (less accurate but doesn't crash)
       const newCount = (count + 1).toString();
       await this.redis.set(redisKey, newCount);
@@ -210,12 +212,13 @@ export class ApiKeyService {
 
   private generateApiKey(): string {
     const randomBytes = crypto.randomBytes(24);
-    const randomString = randomBytes.toString('base64')
+    const randomString = randomBytes
+      .toString('base64')
       .replace(/\+/g, '')
       .replace(/\//g, '')
       .replace(/=/g, '')
       .substring(0, 32);
-    
+
     return `propchain_live_${randomString}`;
   }
 
@@ -234,10 +237,10 @@ export class ApiKeyService {
 
   private validateScopes(scopes: string[]): void {
     const invalidScopes = scopes.filter(scope => !API_KEY_SCOPES.includes(scope as ApiKeyScope));
-    
+
     if (invalidScopes.length > 0) {
       throw new BadRequestException(
-        `Invalid scopes: ${invalidScopes.join(', ')}. Valid scopes are: ${API_KEY_SCOPES.join(', ')}`
+        `Invalid scopes: ${invalidScopes.join(', ')}. Valid scopes are: ${API_KEY_SCOPES.join(', ')}`,
       );
     }
   }

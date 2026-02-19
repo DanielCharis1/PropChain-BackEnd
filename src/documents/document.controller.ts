@@ -13,11 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiHeader, ApiConsumes } from '@nestjs/swagger';
-import {
-  DocumentAccessContext,
-  DocumentMetadataInput,
-  DocumentSearchFilters,
-} from './document.model';
+import { DocumentAccessContext, DocumentMetadataInput, DocumentSearchFilters } from './document.model';
 import { DocumentService } from './document.service';
 import {
   UploadDocumentDto,
@@ -163,8 +159,7 @@ export class DocumentController {
       description: input.description,
       tags: input.tags === undefined ? undefined : this.parseCsv(input.tags),
       accessLevel: input.accessLevel,
-      allowedUserIds:
-        input.allowedUserIds === undefined ? undefined : this.parseCsv(input.allowedUserIds),
+      allowedUserIds: input.allowedUserIds === undefined ? undefined : this.parseCsv(input.allowedUserIds),
       allowedRoles: input.allowedRoles === undefined ? undefined : this.parseCsv(input.allowedRoles),
       customFields: input.customFields === undefined ? undefined : this.parseCustomFields(input.customFields),
     };
@@ -176,7 +171,7 @@ export class DocumentController {
     }
     return value
       .split(',')
-      .map((entry) => entry.trim())
+      .map(entry => entry.trim())
       .filter(Boolean);
   }
 

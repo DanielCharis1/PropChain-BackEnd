@@ -26,10 +26,7 @@ export class RedisHealthIndicator extends HealthIndicator {
       }
       throw new Error('Redis ping failed');
     } catch (error) {
-      throw new HealthCheckError(
-        'Redis connection failed',
-        this.getStatus(key, false, { error: error.message }),
-      );
+      throw new HealthCheckError('Redis connection failed', this.getStatus(key, false, { error: error.message }));
     }
   }
 

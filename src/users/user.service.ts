@@ -13,11 +13,8 @@ export class UserService {
     // Check if user already exists
     const existingUser = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email },
-          ...(walletAddress ? [{ walletAddress }] : [])
-        ]
-      }
+        OR: [{ email }, ...(walletAddress ? [{ walletAddress }] : [])],
+      },
     });
 
     if (existingUser) {
@@ -50,11 +47,11 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    
+
     return user;
   }
 
@@ -88,7 +85,7 @@ export class UserService {
           id: { not: id }, // Exclude current user
         },
       });
-      
+
       if (existingUser) {
         throw new ConflictException('Email already taken by another user');
       }
@@ -101,7 +98,7 @@ export class UserService {
           id: { not: id }, // Exclude current user
         },
       });
-      
+
       if (existingUser) {
         throw new ConflictException('Wallet address already taken by another user');
       }

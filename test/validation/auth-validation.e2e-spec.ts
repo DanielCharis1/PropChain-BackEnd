@@ -40,7 +40,7 @@ describe('Auth Validation (e2e)', () => {
           password: 'SecureP@ss123',
         })
         .expect(400)
-        .expect((res) => {
+        .expect(res => {
           expect(res.body.message).toContain('email');
         });
     });
@@ -80,7 +80,7 @@ describe('Auth Validation (e2e)', () => {
           isAdmin: true,
         })
         .expect(400)
-        .expect((res) => {
+        .expect(res => {
           expect(JSON.stringify(res.body.message)).toContain('should not exist');
         });
     });
@@ -111,19 +111,13 @@ describe('Auth Validation (e2e)', () => {
     });
 
     it('should reject missing required fields', () => {
-      return request(app.getHttpServer())
-        .post('/auth/register')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/auth/register').send({}).expect(400);
     });
   });
 
   describe('POST /auth/login', () => {
     it('should reject empty request body', () => {
-      return request(app.getHttpServer())
-        .post('/auth/login')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/auth/login').send({}).expect(400);
     });
 
     it('should reject invalid email format', () => {
@@ -159,10 +153,7 @@ describe('Auth Validation (e2e)', () => {
     });
 
     it('should reject missing fields', () => {
-      return request(app.getHttpServer())
-        .post('/auth/web3-login')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/auth/web3-login').send({}).expect(400);
     });
   });
 
@@ -186,10 +177,7 @@ describe('Auth Validation (e2e)', () => {
     });
 
     it('should reject missing refresh token', () => {
-      return request(app.getHttpServer())
-        .post('/auth/refresh-token')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/auth/refresh-token').send({}).expect(400);
     });
   });
 
@@ -213,10 +201,7 @@ describe('Auth Validation (e2e)', () => {
     });
 
     it('should reject missing email', () => {
-      return request(app.getHttpServer())
-        .post('/auth/forgot-password')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/auth/forgot-password').send({}).expect(400);
     });
   });
 
@@ -242,10 +227,7 @@ describe('Auth Validation (e2e)', () => {
     });
 
     it('should reject missing fields', () => {
-      return request(app.getHttpServer())
-        .put('/auth/reset-password')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).put('/auth/reset-password').send({}).expect(400);
     });
   });
 });

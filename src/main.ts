@@ -21,11 +21,10 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
-  
-  // Use our new StructuredLoggerService
- const logger = await app.resolve(StructuredLoggerService);
- app.useLogger(logger);
 
+  // Use our new StructuredLoggerService
+  const logger = await app.resolve(StructuredLoggerService);
+  app.useLogger(logger);
 
   // Security middleware
   app.use(helmet());
@@ -54,12 +53,9 @@ async function bootstrap() {
   // Global filters and interceptors
   // FIX: Removed arguments from AllExceptionsFilter because the constructor expects 0
   app.useGlobalFilters(new AllExceptionsFilter());
-  
+
   // Using 'as any' to bypass the strict LoggerService interface mismatch
-  app.useGlobalInterceptors(
-    new ResponseInterceptor(logger as any),
-    new LoggingInterceptor(logger as any) 
-  );
+  app.useGlobalInterceptors(new ResponseInterceptor(logger as any), new LoggingInterceptor(logger as any));
 
   // API prefix
   const apiPrefix = configService.get('API_PREFIX', 'api');
@@ -112,7 +108,7 @@ async function bootstrap() {
   });
 }
 
-bootstrap().catch((error) => {
+bootstrap().catch(error => {
   console.error('Failed to start application:', error);
   process.exit(1);
 });

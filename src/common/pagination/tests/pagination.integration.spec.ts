@@ -29,10 +29,12 @@ describe('Pagination Integration Tests', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      transform: true,
-      whitelist: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    );
 
     await app.init();
 
@@ -46,9 +48,7 @@ describe('Pagination Integration Tests', () => {
 
   describe('GET /users (paginated endpoint)', () => {
     it('should return first page with default pagination', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users').expect(200);
 
       expect(response.body).toHaveProperty('data');
       expect(response.body).toHaveProperty('meta');
@@ -58,56 +58,40 @@ describe('Pagination Integration Tests', () => {
     });
 
     it('should return specified page', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users?page=2&limit=10')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?page=2&limit=10').expect(200);
 
       expect(response.body.meta.page).toBe(2);
       expect(response.body.meta.hasPrev).toBe(true);
     });
 
     it('should respect custom limit', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users?limit=5')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?limit=5').expect(200);
 
       expect(response.body.data).toHaveLength(5);
       expect(response.body.meta.limit).toBe(5);
     });
 
     it('should handle last page correctly', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users?page=10&limit=10')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?page=10&limit=10').expect(200);
 
       expect(response.body.meta.hasNext).toBe(false);
       expect(response.body.meta.hasPrev).toBe(true);
     });
 
     it('should validate page parameter', async () => {
-      await request(app.getHttpServer())
-        .get('/users?page=0')
-        .expect(400);
+      await request(app.getHttpServer()).get('/users?page=0').expect(400);
 
-      await request(app.getHttpServer())
-        .get('/users?page=-1')
-        .expect(400);
+      await request(app.getHttpServer()).get('/users?page=-1').expect(400);
     });
 
     it('should validate limit parameter', async () => {
-      await request(app.getHttpServer())
-        .get('/users?limit=0')
-        .expect(400);
+      await request(app.getHttpServer()).get('/users?limit=0').expect(400);
 
-      await request(app.getHttpServer())
-        .get('/users?limit=101')
-        .expect(400);
+      await request(app.getHttpServer()).get('/users?limit=101').expect(400);
     });
 
     it('should handle sorting', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users?sortBy=name&sortOrder=ASC')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?sortBy=name&sortOrder=ASC').expect(200);
 
       expect(response.body.data).toBeDefined();
 
@@ -118,9 +102,7 @@ describe('Pagination Integration Tests', () => {
     });
 
     it('should return correct metadata', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users?page=2&limit=10')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?page=2&limit=10').expect(200);
 
       expect(response.body.meta).toMatchObject({
         page: 2,
@@ -133,25 +115,19 @@ describe('Pagination Integration Tests', () => {
     });
 
     it('should handle empty results', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/users?page=1000')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/users?page=1000').expect(200);
 
       expect(response.body.data).toEqual([]);
       expect(response.body.meta.hasNext).toBe(false);
     });
 
     it('should navigate through all pages', async () => {
-      const firstPage = await request(app.getHttpServer())
-        .get('/users?page=1&limit=10')
-        .expect(200);
+      const firstPage = await request(app.getHttpServer()).get('/users?page=1&limit=10').expect(200);
 
       const totalPages = firstPage.body.meta.pages;
 
       for (let page = 1; page <= totalPages; page++) {
-        const response = await request(app.getHttpServer())
-          .get(`/users?page=${page}&limit=10`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get(`/users?page=${page}&limit=10`).expect(200);
 
         expect(response.body.meta.page).toBe(page);
         expect(response.body.meta.hasPrev).toBe(page > 1);
@@ -163,16 +139,12 @@ describe('Pagination Integration Tests', () => {
       const allIds = new Set();
       const limit = 10;
 
-      const firstPage = await request(app.getHttpServer())
-        .get(`/users?page=1&limit=${limit}`)
-        .expect(200);
+      const firstPage = await request(app.getHttpServer()).get(`/users?page=1&limit=${limit}`).expect(200);
 
       const totalPages = firstPage.body.meta.pages;
 
       for (let page = 1; page <= totalPages; page++) {
-        const response = await request(app.getHttpServer())
-          .get(`/users?page=${page}&limit=${limit}`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get(`/users?page=${page}&limit=${limit}`).expect(200);
 
         response.body.data.forEach(item => {
           expect(allIds.has(item.id)).toBe(false); // No duplicates

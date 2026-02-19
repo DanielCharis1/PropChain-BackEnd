@@ -11,13 +11,7 @@ import {
   HttpStatus,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { ApiKeyService } from './api-key.service';
 import { CreateApiKeyDto } from './dto/create-api-key.dto';
 import { UpdateApiKeyDto } from './dto/update-api-key.dto';
@@ -30,7 +24,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ApiKeyController {
-  constructor(private readonly apiKeyService: ApiKeyService) { }
+  constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @Post()
   @ApiOperation({
@@ -114,10 +108,7 @@ export class ApiKeyController {
   @ApiResponse({ status: 404, description: 'API key not found' })
   @ApiResponse({ status: 400, description: 'Invalid update data' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async update(
-    @Param('id') id: string,
-    @Body() updateApiKeyDto: UpdateApiKeyDto,
-  ): Promise<ApiKeyResponseDto> {
+  async update(@Param('id') id: string, @Body() updateApiKeyDto: UpdateApiKeyDto): Promise<ApiKeyResponseDto> {
     return this.apiKeyService.update(id, updateApiKeyDto);
   }
 

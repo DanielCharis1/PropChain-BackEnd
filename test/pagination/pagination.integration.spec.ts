@@ -57,7 +57,7 @@ describe('Pagination Integration Tests', () => {
 
       expect(page1.body.meta.page).toBe(1);
       expect(page2.body.meta.page).toBe(2);
-      
+
       // Items should be different if there are enough items
       if (page1.body.meta.total > 5) {
         expect(page1.body.data[0]?.id).not.toBe(page2.body.data[0]?.id);

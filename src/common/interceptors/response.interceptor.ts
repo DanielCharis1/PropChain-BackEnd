@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Request } from 'express';
@@ -29,19 +24,13 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     const userId = (request as any).user?.id;
 
     return next.handle().pipe(
-      map((data) => {
+      map(data => {
         const duration = Date.now() - startTime;
         const response = context.switchToHttp().getResponse();
         const statusCode = response.statusCode;
 
         // Log the response
-        this.loggerService.logResponse(
-          request.method,
-          request.url,
-          statusCode,
-          duration,
-          userId,
-        );
+        this.loggerService.logResponse(request.method, request.url, statusCode, duration, userId);
 
         // Determine message based on status code
         let message = 'Success';
