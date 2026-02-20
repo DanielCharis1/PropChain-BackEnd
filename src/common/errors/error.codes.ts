@@ -117,4 +117,5 @@ export const ErrorMessages: Record<ErrorCode, string> = {
 
   [ErrorCode.SERVICE_UNAVAILABLE]: 'The requested service is temporarily unavailable.',
   [ErrorCode.CIRCUIT_OPEN]: 'Circuit breaker is open. Please try again later.',
+  [ErrorCode.EXTERNAL_API_ERROR]: 'An error occurred while communicating with an external service.',
 };

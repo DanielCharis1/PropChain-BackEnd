@@ -745,13 +745,12 @@ export class ValuationService {
     }
   }
 
-   async getPropertyValuation(propertyId: string) {
+  async getPropertyValuation(propertyId: string) {
     return withResilience(() => this.callExternalValuationApi(propertyId), {
       name: 'ValuationAPI',
       retries: 3,
       fallback: async err => {
-        this.logger.warn(`Valuation API failed for ${propertyId}, using fallback.`);
-        // Graceful degradation: Fetch last known price from DB
+        this.logger.warn(`Valuation API failed for ${propertyId}, using fallback. Error: ${err.message}`);
         const lastPrice = await this.prisma.propertyValuation.findFirst({
           where: { propertyId },
           orderBy: { createdAt: 'desc' },
@@ -759,5 +758,16 @@ export class ValuationService {
         return lastPrice || { value: 0, status: 'ESTIMATED' };
       },
     });
+  }
+
+  private async callExternalValuationApi(propertyId: string) {
+    const apiKey = this.configService.get<string>('VALUATION_API_KEY');
+    const apiUrl = this.configService.get<string>('VALUATION_API_URL');
+
+    const response = await axios.get(`${apiUrl}/valuation/${propertyId}`, {
+      headers: { 'X-API-KEY': apiKey },
+    });
+
+    return response.data;
   }
 }
