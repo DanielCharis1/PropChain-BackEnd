@@ -162,7 +162,8 @@ export class CacheService {
    */
   async clear(): Promise<void> {
     try {
-      await this.cache.reset();
+      // For Redis, use flushdb to clear all keys
+      await this.redisService.flushdb();
       this.logger.debug('Cache cleared');
     } catch (error) {
       this.logger.error(`Cache CLEAR error: ${error.message}`);

@@ -71,5 +71,10 @@ export class RedisService {
   async eval(script: string, keys: string[], args: string[]): Promise<any> {
     return await this.redis.eval(script, keys.length, ...keys, ...args);
   }
+
+  async flushdb(): Promise<string> {
+    return await this.redis.flushdb();
+  }
 }
+
 
