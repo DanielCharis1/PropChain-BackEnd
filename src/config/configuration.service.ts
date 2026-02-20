@@ -125,6 +125,10 @@ export class ConfigurationService {
     return this.configService.get<number>('THROTTLE_LIMIT');
   }
 
+  get apiKeyRateLimitPerMinute(): number {
+    return this.configService.get<number>('API_KEY_RATE_LIMIT_PER_MINUTE');
+  }
+
   // File Upload
   get maxFileSize(): number {
     return this.configService.get<number>('MAX_FILE_SIZE');
@@ -204,6 +208,133 @@ export class ConfigurationService {
     return this.configService.get<boolean>('ENABLE_SEED_DATA');
   }
 
+  // Storage Configuration
+  get storageProvider(): 's3' | 'memory' {
+    return this.configService.get<'s3' | 'memory'>('STORAGE_PROVIDER');
+  }
+
+  get storageSignedUrlExpiresIn(): number {
+    return this.configService.get<number>('STORAGE_SIGNED_URL_EXPIRES_IN');
+  }
+
+  get storageSigningSecret(): string {
+    return this.configService.get<string>('STORAGE_SIGNING_SECRET');
+  }
+
+  get thumbnailWidth(): number {
+    return this.configService.get<number>('THUMBNAIL_WIDTH');
+  }
+
+  get thumbnailHeight(): number {
+    return this.configService.get<number>('THUMBNAIL_HEIGHT');
+  }
+
+  get thumbnailFormat(): 'jpeg' | 'png' | 'webp' {
+    return this.configService.get<'jpeg' | 'png' | 'webp'>('THUMBNAIL_FORMAT');
+  }
+
+  get thumbnailQuality(): number {
+    return this.configService.get<number>('THUMBNAIL_QUALITY');
+  }
+
+  // S3 Configuration
+  get s3Bucket(): string {
+    return this.configService.get<string>('S3_BUCKET');
+  }
+
+  get s3Region(): string {
+    return this.configService.get<string>('S3_REGION');
+  }
+
+  get s3AccessKeyId(): string | undefined {
+    return this.configService.get<string>('S3_ACCESS_KEY_ID');
+  }
+
+  get s3SecretAccessKey(): string | undefined {
+    return this.configService.get<string>('S3_SECRET_ACCESS_KEY');
+  }
+
+  get s3Endpoint(): string | undefined {
+    return this.configService.get<string>('S3_ENDPOINT');
+  }
+
+  get s3ForcePathStyle(): boolean {
+    return this.configService.get<boolean>('S3_FORCE_PATH_STYLE');
+  }
+
+  // Valuation Configuration
+  get zillowApiKey(): string | undefined {
+    return this.configService.get<string>('ZILLOW_API_KEY');
+  }
+
+  get redfinApiKey(): string | undefined {
+    return this.configService.get<string>('REDFIN_API_KEY');
+  }
+
+  get coreLogicApiKey(): string | undefined {
+    return this.configService.get<string>('CORE_LOGIC_API_KEY');
+  }
+
+  get maxmindLicenseKey(): string | undefined {
+    return this.configService.get<string>('MAXMIND_LICENSE_KEY');
+  }
+
+  get valuationConfidenceThreshold(): number {
+    return this.configService.get<number>('VALUATION_CONFIDENCE_THRESHOLD');
+  }
+
+  get valuationCacheTtl(): number {
+    return this.configService.get<number>('VALUATION_CACHE_TTL');
+  }
+
+  get valuationMaxRetries(): number {
+    return this.configService.get<number>('VALUATION_MAX_RETRIES');
+  }
+
+  get valuationTimeout(): number {
+    return this.configService.get<number>('VALUATION_TIMEOUT');
+  }
+
+  get marketTrendsApiEndpoint(): string | undefined {
+    return this.configService.get<string>('MARKET_TRENDS_API_ENDPOINT');
+  }
+
+  get marketTrendsApiKey(): string | undefined {
+    return this.configService.get<string>('MARKET_TRENDS_API_KEY');
+  }
+
+  get marketTrendsUpdateFreq(): number {
+    return this.configService.get<number>('MARKET_TRENDS_UPDATE_FREQ');
+  }
+
+  get valuationRateLimitPerMinute(): number {
+    return this.configService.get<number>('VALUATION_RATE_LIMIT_PER_MINUTE');
+  }
+
+  get valuationRateLimitPerHour(): number {
+    return this.configService.get<number>('VALUATION_RATE_LIMIT_PER_HOUR');
+  }
+
+  get locationWeight(): number {
+    return this.configService.get<number>('LOCATION_WEIGHT');
+  }
+
+  get sizeWeight(): number {
+    return this.configService.get<number>('SIZE_WEIGHT');
+  }
+
+  get ageWeight(): number {
+    return this.configService.get<number>('AGE_WEIGHT');
+  }
+
+  get amenitiesWeight(): number {
+    return this.configService.get<number>('AMENITIES_WEIGHT');
+  }
+
+  get marketConditionsWeight(): number {
+    return this.configService.get<number>('MARKET_CONDITIONS_WEIGHT');
+  }
+
   // Helper method to check if we're in development
   get isDevelopment(): boolean {
     return this.nodeEnv === 'development';
@@ -217,5 +348,10 @@ export class ConfigurationService {
   // Helper method to check if we're in test
   get isTest(): boolean {
     return this.nodeEnv === 'test';
+  }
+
+  // Helper method to check if we're in staging
+  get isStaging(): boolean {
+    return this.nodeEnv === 'staging';
   }
 }
