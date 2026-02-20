@@ -2,6 +2,8 @@ import { IsEmail, IsString, IsOptional, MinLength, IsNotEmpty, MaxLength, Matche
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEthereumAddress } from '../../common/validators/is-ethereum-address.validator';
 import { IsStrongPassword } from '../../common/validators/is-strong-password.validator';
+import { IsXssSafe } from '../../common/validators/xss.validator';
+import { IsNotSqlInjection } from '../../common/validators/sql-injection.validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -12,6 +14,8 @@ export class CreateUserDto {
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty({ message: 'Email is required' })
   @MaxLength(255, { message: 'Email must not exceed 255 characters' })
+  @IsXssSafe({ message: 'Email contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Email contains potential SQL injection' })
   email: string;
 
   @ApiProperty({
@@ -27,6 +31,8 @@ export class CreateUserDto {
   @Matches(/^[a-zA-Z\s'-]+$/, {
     message: 'First name can only contain letters, spaces, hyphens, and apostrophes',
   })
+  @IsXssSafe({ message: 'First name contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'First name contains potential SQL injection' })
   firstName: string;
 
   @ApiProperty({
@@ -42,6 +48,8 @@ export class CreateUserDto {
   @Matches(/^[a-zA-Z\s'-]+$/, {
     message: 'Last name can only contain letters, spaces, hyphens, and apostrophes',
   })
+  @IsXssSafe({ message: 'Last name contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Last name contains potential SQL injection' })
   lastName: string;
 
   @ApiProperty({
@@ -54,6 +62,8 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Password is required' })
   @MinLength(8, { message: 'Password must be at least 8 characters' })
   @MaxLength(128, { message: 'Password must not exceed 128 characters' })
+  @IsXssSafe({ message: 'Password contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Password contains potential SQL injection' })
   @IsStrongPassword()
   password: string;
 
@@ -63,5 +73,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsEthereumAddress({ message: 'Invalid Ethereum wallet address format' })
+  @IsXssSafe({ message: 'Wallet address contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Wallet address contains potential SQL injection' })
   walletAddress?: string;
 }

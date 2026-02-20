@@ -14,6 +14,8 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsXssSafe } from '../../common/validators/xss.validator';
+import { IsNotSqlInjection } from '../../common/validators/sql-injection.validator';
 
 export enum PropertyType {
   RESIDENTIAL = 'RESIDENTIAL',
@@ -38,6 +40,8 @@ export class AddressDto {
   @IsString({ message: 'Street must be a string' })
   @IsNotEmpty({ message: 'Street is required' })
   @MaxLength(255, { message: 'Street must not exceed 255 characters' })
+  @IsXssSafe({ message: 'Street address contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Street address contains potential SQL injection' })
   street: string;
 
   @ApiProperty({
@@ -48,6 +52,8 @@ export class AddressDto {
   @IsString({ message: 'City must be a string' })
   @IsNotEmpty({ message: 'City is required' })
   @MaxLength(100, { message: 'City must not exceed 100 characters' })
+  @IsXssSafe({ message: 'City name contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'City name contains potential SQL injection' })
   city: string;
 
   @ApiPropertyOptional({
@@ -58,6 +64,8 @@ export class AddressDto {
   @IsOptional()
   @IsString({ message: 'State must be a string' })
   @MaxLength(100, { message: 'State must not exceed 100 characters' })
+  @IsXssSafe({ message: 'State/province contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'State/province contains potential SQL injection' })
   state?: string;
 
   @ApiPropertyOptional({
@@ -68,6 +76,8 @@ export class AddressDto {
   @IsOptional()
   @IsString({ message: 'Postal code must be a string' })
   @MaxLength(20, { message: 'Postal code must not exceed 20 characters' })
+  @IsXssSafe({ message: 'Postal code contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Postal code contains potential SQL injection' })
   postalCode?: string;
 
   @ApiProperty({
@@ -78,6 +88,8 @@ export class AddressDto {
   @IsString({ message: 'Country must be a string' })
   @IsNotEmpty({ message: 'Country is required' })
   @MaxLength(100, { message: 'Country must not exceed 100 characters' })
+  @IsXssSafe({ message: 'Country name contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Country name contains potential SQL injection' })
   country: string;
 }
 
@@ -90,6 +102,8 @@ export class CreatePropertyDto {
   @IsString({ message: 'Title must be a string' })
   @IsNotEmpty({ message: 'Title is required' })
   @MaxLength(200, { message: 'Title must not exceed 200 characters' })
+  @IsXssSafe({ message: 'Property title contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Property title contains potential SQL injection' })
   title: string;
 
   @ApiPropertyOptional({
@@ -100,6 +114,8 @@ export class CreatePropertyDto {
   @IsOptional()
   @IsString({ message: 'Description must be a string' })
   @MaxLength(5000, { message: 'Description must not exceed 5000 characters' })
+  @IsXssSafe({ message: 'Property description contains potentially malicious content' })
+  @IsNotSqlInjection({ message: 'Property description contains potential SQL injection' })
   description?: string;
 
   @ApiProperty({
@@ -132,6 +148,8 @@ export class CreatePropertyDto {
   @IsString({ each: true, message: 'Each feature must be a string' })
   @ArrayMaxSize(50, { message: 'Cannot have more than 50 features' })
   @MaxLength(100, { each: true, message: 'Each feature must not exceed 100 characters' })
+  @IsXssSafe({ each: true, message: 'Feature contains potentially malicious content' })
+  @IsNotSqlInjection({ each: true, message: 'Feature contains potential SQL injection' })
   features?: string[];
 
   @ApiPropertyOptional({
