@@ -286,19 +286,15 @@ export class ValuationService {
   private normalizeFeatures(features: PropertyFeatures): PropertyFeatures {
     // Normalize location: trim and lowercase
     const location = features.location ? features.location.trim().toLowerCase() : '';
-    
+
     // Convert string values to numbers where appropriate
-    const bedrooms = typeof features.bedrooms === 'string' ? 
-      parseInt(features.bedrooms, 10) : features.bedrooms;
-    const bathrooms = typeof features.bathrooms === 'string' ? 
-      parseFloat(features.bathrooms) : features.bathrooms;
-    const squareFootage = typeof features.squareFootage === 'string' ? 
-      parseInt(features.squareFootage, 10) : features.squareFootage;
-    const yearBuilt = typeof features.yearBuilt === 'string' ? 
-      parseInt(features.yearBuilt, 10) : features.yearBuilt;
-    const lotSize = typeof features.lotSize === 'string' ? 
-      parseFloat(features.lotSize) : features.lotSize;
-    
+    const bedrooms = typeof features.bedrooms === 'string' ? parseInt(features.bedrooms, 10) : features.bedrooms;
+    const bathrooms = typeof features.bathrooms === 'string' ? parseFloat(features.bathrooms) : features.bathrooms;
+    const squareFootage =
+      typeof features.squareFootage === 'string' ? parseInt(features.squareFootage, 10) : features.squareFootage;
+    const yearBuilt = typeof features.yearBuilt === 'string' ? parseInt(features.yearBuilt, 10) : features.yearBuilt;
+    const lotSize = typeof features.lotSize === 'string' ? parseFloat(features.lotSize) : features.lotSize;
+
     return {
       ...features,
       location,

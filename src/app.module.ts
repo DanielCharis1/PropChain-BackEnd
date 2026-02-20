@@ -50,6 +50,8 @@ import { AuthRateLimitMiddleware } from './auth/middleware/auth.middleware';
       isGlobal: true,
       load: [configuration, valuationConfig],
       envFilePath: ['.env.local', '.env.development', '.env'],
+      cache: true, // Enable configuration caching
+      expandVariables: true, // Allow environment variable expansion
     }),
     ConfigurationModule,
 
