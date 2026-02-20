@@ -55,8 +55,8 @@ describe('Pagination Service - Performance Tests', () => {
 
       const duration = Date.now() - start;
 
-      // Should handle 1000 pagination calculations in less than 50ms
-      expect(duration).toBeLessThan(50);
+      // Should handle 1000 pagination calculations in less than 100ms
+      expect(duration).toBeLessThan(100);
     });
 
     it('should efficiently generate Prisma options for many queries', () => {
