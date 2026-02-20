@@ -162,7 +162,7 @@ config/local.json
 config/production.json
 
 # Hardhat
-cache/
+# cache/  # Commented out to allow source code cache directory
 artifacts/
 typechain-types/
 
