@@ -30,10 +30,7 @@ export class RateLimitingService {
    * @param config Rate limit configuration
    * @returns Rate limit info and whether request is allowed
    */
-  async checkRateLimit(
-    key: string,
-    config: RateLimitConfig,
-  ): Promise<{ allowed: boolean; info: RateLimitInfo }> {
+  async checkRateLimit(key: string, config: RateLimitConfig): Promise<{ allowed: boolean; info: RateLimitInfo }> {
     try {
       const redisKey = `${config.keyPrefix || 'rate_limit'}:${key}`;
       const currentTime = Date.now();
@@ -81,10 +78,7 @@ export class RateLimitingService {
   /**
    * Get rate limit information without consuming a request
    */
-  async getRateLimitInfo(
-    key: string,
-    config: RateLimitConfig,
-  ): Promise<RateLimitInfo> {
+  async getRateLimitInfo(key: string, config: RateLimitConfig): Promise<RateLimitInfo> {
     try {
       const redisKey = `${config.keyPrefix || 'rate_limit'}:${key}`;
       const currentTime = Date.now();

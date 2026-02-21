@@ -3,17 +3,17 @@ import { Request } from 'express';
 
 describe('SecurityMiddleware', () => {
   let middleware: SecurityMiddleware;
-  
+
   // Mock services
   const mockIpBlockingService = {
     shouldBlockRequest: jest.fn(),
   };
-  
+
   const mockDdosProtectionService = {
     monitorTraffic: jest.fn(),
     isIpBlockedForDdos: jest.fn(),
   };
-  
+
   const mockSecurityHeadersService = {
     getSecurityHeaders: jest.fn().mockReturnValue({}),
   };

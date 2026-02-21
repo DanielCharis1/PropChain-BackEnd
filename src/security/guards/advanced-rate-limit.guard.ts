@@ -21,15 +21,12 @@ export class AdvancedRateLimitGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest();
-      
+
       // Get rate limit options from decorator or use defaults
-      const options = this.reflector.get<RateLimitOptions>(
-        'rateLimitOptions',
-        context.getHandler(),
-      ) || {};
+      const options = this.reflector.get<RateLimitOptions>('rateLimitOptions', context.getHandler()) || {};
 
       // Check if we should skip rate limiting
-      if (options.skipIf && await options.skipIf(context)) {
+      if (options.skipIf && (await options.skipIf(context))) {
         return true;
       }
 

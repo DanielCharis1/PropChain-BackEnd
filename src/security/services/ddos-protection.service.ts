@@ -38,7 +38,7 @@ export class DdosProtectionService {
     try {
       const currentTime = Date.now();
       const windowStart = currentTime - this.REQUEST_WINDOW;
-      
+
       // Track request in Redis
       const requestKey = `${this.DDOS_PREFIX}:requests:${ip}`;
       await this.redisService.getRedisInstance().zadd(requestKey, currentTime, currentTime.toString());
@@ -50,17 +50,17 @@ export class DdosProtectionService {
 
       // Check if threshold exceeded
       const threshold = this.configService.get<number>('DDOS_THRESHOLD_PER_MINUTE', 100);
-      
+
       if (requestCount > threshold) {
         const attackId = this.generateAttackId(ip, currentTime);
-        
+
         // Check if we've already detected this attack
         if (this.attackIds.has(attackId)) {
           return { isAttack: true };
         }
 
         this.attackIds.add(attackId);
-        
+
         const attackInfo: DdosAttackInfo = {
           attackId,
           detectedAt: new Date(),
@@ -72,7 +72,7 @@ export class DdosProtectionService {
 
         // Apply mitigation
         await this.mitigateAttack(attackInfo);
-        
+
         this.logger.warn(`DDoS attack detected from IP ${ip} - Request count: ${requestCount}`);
         return { isAttack: true, info: attackInfo };
       }
@@ -175,9 +175,7 @@ export class DdosProtectionService {
         }
       }
 
-      return attacks.sort((a, b) => 
-        new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime()
-      );
+      return attacks.sort((a, b) => new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime());
     } catch (error) {
       this.logger.error('Failed to get recent attacks:', error);
       return [];
@@ -191,12 +189,8 @@ export class DdosProtectionService {
     try {
       const attackKey = `${this.DDOS_PREFIX}:attacks:${attackInfo.attackId}`;
       const retentionHours = this.configService.get<number>('DDOS_ATTACK_RETENTION_HOURS', 168); // 1 week
-      
-      await this.redisService.setex(
-        attackKey,
-        retentionHours * 3600,
-        JSON.stringify(attackInfo),
-      );
+
+      await this.redisService.setex(attackKey, retentionHours * 3600, JSON.stringify(attackInfo));
     } catch (error) {
       this.logger.error(`Failed to store attack info ${attackInfo.attackId}:`, error);
     }
@@ -252,7 +246,7 @@ export class DdosProtectionService {
     try {
       const attackPattern = `${this.DDOS_PREFIX}:attacks:*`;
       const blockPattern = `${this.DDOS_PREFIX}:blocked:*`;
-      
+
       const attackKeys = await this.redisService.keys(attackPattern);
       const blockKeys = await this.redisService.keys(blockPattern);
       const threshold = this.configService.get<number>('DDOS_THRESHOLD_PER_MINUTE', 100);
@@ -284,11 +278,7 @@ export class DdosProtectionService {
         reason: 'manual_block',
       };
 
-      await this.redisService.setex(
-        blockKey,
-        Math.ceil(durationMs / 1000),
-        JSON.stringify(blockData),
-      );
+      await this.redisService.setex(blockKey, Math.ceil(durationMs / 1000), JSON.stringify(blockData));
 
       this.logger.warn(`IP manually blocked for DDoS protection: ${ip}`);
     } catch (error) {

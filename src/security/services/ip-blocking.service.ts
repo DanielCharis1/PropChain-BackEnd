@@ -29,7 +29,7 @@ export class IpBlockingService {
     try {
       const blockKey = `${this.BLOCK_KEY_PREFIX}:${ip}`;
       const isBlocked = await this.redisService.exists(blockKey);
-      
+
       if (isBlocked) {
         // Check if block has expired
         const ttl = await this.redisService.ttl(blockKey);
@@ -83,7 +83,7 @@ export class IpBlockingService {
       };
 
       const jsonData = JSON.stringify(blockInfo);
-      
+
       if (durationMs) {
         await this.redisService.setex(blockKey, Math.ceil(durationMs / 1000), jsonData);
       } else {
@@ -169,7 +169,7 @@ export class IpBlockingService {
       // Get current attempts
       const attemptsData = await this.redisService.get(attemptKey);
       const attempts = attemptsData ? JSON.parse(attemptsData) : [];
-      
+
       // Add new attempt
       attempts.push({
         timestamp: Date.now(),
@@ -178,16 +178,10 @@ export class IpBlockingService {
 
       // Filter out old attempts outside the window
       const windowStart = Date.now() - windowMs;
-      const recentAttempts = attempts.filter(
-        (attempt: any) => attempt.timestamp > windowStart,
-      );
+      const recentAttempts = attempts.filter((attempt: any) => attempt.timestamp > windowStart);
 
       // Store updated attempts
-      await this.redisService.setex(
-        attemptKey,
-        Math.ceil(windowMs / 1000),
-        JSON.stringify(recentAttempts),
-      );
+      await this.redisService.setex(attemptKey, Math.ceil(windowMs / 1000), JSON.stringify(recentAttempts));
 
       // Auto-block if too many attempts
       if (recentAttempts.length >= maxAttempts) {

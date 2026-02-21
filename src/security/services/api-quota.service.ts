@@ -40,17 +40,17 @@ export class ApiQuotaService {
     try {
       const quotaKey = `${this.QUOTA_KEY_PREFIX}:${apiKeyId}`;
       const quotaData = await this.redisService.get(quotaKey);
-      
+
       if (!quotaData) {
         return null;
       }
 
       const quota = JSON.parse(quotaData) as ApiQuota;
-      
+
       // Update current usage
       quota.currentDailyUsage = await this.getCurrentDailyUsage(apiKeyId);
       quota.currentMonthlyUsage = await this.getCurrentMonthlyUsage(apiKeyId);
-      
+
       return quota;
     } catch (error) {
       this.logger.error(`Failed to get quota for API key ${apiKeyId}:`, error);
@@ -61,14 +61,14 @@ export class ApiQuotaService {
   /**
    * Check if API key has available quota
    */
-  async hasAvailableQuota(apiKeyId: string): Promise<{ 
-    hasQuota: boolean; 
+  async hasAvailableQuota(apiKeyId: string): Promise<{
+    hasQuota: boolean;
     quota?: ApiQuota;
     reason?: string;
   }> {
     try {
       const quota = await this.getQuota(apiKeyId);
-      
+
       if (!quota) {
         return { hasQuota: false, reason: 'No quota found for API key' };
       }
@@ -102,7 +102,7 @@ export class ApiQuotaService {
     try {
       const today = this.getTodayString();
       const currentMonth = this.getCurrentMonthString();
-      
+
       const dailyUsageKey = `${this.USAGE_KEY_PREFIX}:${apiKeyId}:daily:${today}`;
       const monthlyUsageKey = `${this.USAGE_KEY_PREFIX}:${apiKeyId}:monthly:${currentMonth}`;
 
@@ -132,15 +132,10 @@ export class ApiQuotaService {
   /**
    * Create or update quota for an API key
    */
-  async setQuota(
-    apiKeyId: string,
-    plan: string,
-    userId?: string,
-    expiresAt?: Date,
-  ): Promise<ApiQuota> {
+  async setQuota(apiKeyId: string, plan: string, userId?: string, expiresAt?: Date): Promise<ApiQuota> {
     try {
       const planConfig = this.getPlanConfig(plan);
-      
+
       const quota: ApiQuota = {
         apiKeyId,
         userId,
@@ -154,11 +149,7 @@ export class ApiQuotaService {
       };
 
       const quotaKey = `${this.QUOTA_KEY_PREFIX}:${apiKeyId}`;
-      await this.redisService.setex(
-        quotaKey,
-        this.getQuotaExpirationSeconds(),
-        JSON.stringify(quota),
-      );
+      await this.redisService.setex(quotaKey, this.getQuotaExpirationSeconds(), JSON.stringify(quota));
 
       this.logger.log(`Quota set for API key ${apiKeyId}: ${plan}`);
       return quota;
@@ -174,11 +165,7 @@ export class ApiQuotaService {
   async updateQuota(quota: ApiQuota): Promise<void> {
     try {
       const quotaKey = `${this.QUOTA_KEY_PREFIX}:${quota.apiKeyId}`;
-      await this.redisService.setex(
-        quotaKey,
-        this.getQuotaExpirationSeconds(),
-        JSON.stringify(quota),
-      );
+      await this.redisService.setex(quotaKey, this.getQuotaExpirationSeconds(), JSON.stringify(quota));
     } catch (error) {
       this.logger.error(`Failed to update quota for API key ${quota.apiKeyId}:`, error);
     }
@@ -191,7 +178,7 @@ export class ApiQuotaService {
     try {
       const pattern = `${this.USAGE_KEY_PREFIX}:*:daily:${this.getTodayString()}`;
       const keys = await this.redisService.keys(pattern);
-      
+
       for (const key of keys) {
         await this.redisService.del(key);
       }
@@ -199,7 +186,7 @@ export class ApiQuotaService {
       // Update quota lastReset times
       const quotaPattern = `${this.QUOTA_KEY_PREFIX}:*`;
       const quotaKeys = await this.redisService.keys(quotaPattern);
-      
+
       for (const key of quotaKeys) {
         const quotaData = await this.redisService.get(key);
         if (quotaData) {
@@ -224,7 +211,7 @@ export class ApiQuotaService {
       const currentMonth = this.getCurrentMonthString();
       const pattern = `${this.USAGE_KEY_PREFIX}:*:monthly:${currentMonth}`;
       const keys = await this.redisService.keys(pattern);
-      
+
       for (const key of keys) {
         await this.redisService.del(key);
       }
@@ -232,7 +219,7 @@ export class ApiQuotaService {
       // Update quota monthly usage
       const quotaPattern = `${this.QUOTA_KEY_PREFIX}:*`;
       const quotaKeys = await this.redisService.keys(quotaPattern);
-      
+
       for (const key of quotaKeys) {
         const quotaData = await this.redisService.get(key);
         if (quotaData) {
@@ -281,7 +268,7 @@ export class ApiQuotaService {
     try {
       const quotaKey = `${this.QUOTA_KEY_PREFIX}:${apiKeyId}`;
       await this.redisService.del(quotaKey);
-      
+
       // Also remove usage data
       const usagePattern = `${this.USAGE_KEY_PREFIX}:${apiKeyId}:*`;
       const usageKeys = await this.redisService.keys(usagePattern);
@@ -332,11 +319,11 @@ export class ApiQuotaService {
   private getPlanConfig(plan: string): QuotaPlan {
     const plans = this.getAvailablePlans();
     const planConfig = plans.find(p => p.name === plan);
-    
+
     if (!planConfig) {
       throw new Error(`Unknown plan: ${plan}`);
     }
-    
+
     return planConfig;
   }
 

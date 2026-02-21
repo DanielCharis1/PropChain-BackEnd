@@ -19,31 +19,31 @@ export interface SecurityHeadersConfig {
     baseUri?: string[];
     reportUri?: string;
   };
-  
+
   // HTTP Strict Transport Security
   hsts?: {
     maxAge?: number;
     includeSubDomains?: boolean;
     preload?: boolean;
   };
-  
+
   // X-Content-Type-Options
   contentTypeOptions?: boolean;
-  
+
   // X-Frame-Options
   frameOptions?: 'DENY' | 'SAMEORIGIN';
-  
+
   // X-XSS-Protection
   xssProtection?: boolean;
-  
+
   // Referrer Policy
   referrerPolicy?: string;
-  
+
   // Permissions Policy
   permissionsPolicy?: {
     [key: string]: string[];
   };
-  
+
   // Feature Policy (deprecated but still used)
   featurePolicy?: {
     [key: string]: string[];
@@ -161,11 +161,11 @@ export class SecurityHeadersService {
    */
   private buildHSTS(hsts: NonNullable<SecurityHeadersConfig['hsts']>): string {
     const parts = [`max-age=${hsts.maxAge || 31536000}`];
-    
+
     if (hsts.includeSubDomains) {
       parts.push('includeSubDomains');
     }
-    
+
     if (hsts.preload) {
       parts.push('preload');
     }

@@ -21,11 +21,7 @@ export class SecurityMiddleware implements NestMiddleware {
       const path = req.path;
 
       // 1. Check IP blocking
-      const blockCheck = await this.ipBlockingService.shouldBlockRequest(
-        clientIp,
-        userAgent,
-        path,
-      );
+      const blockCheck = await this.ipBlockingService.shouldBlockRequest(clientIp, userAgent, path);
 
       if (blockCheck.shouldBlock) {
         this.logger.warn(`Blocked request from IP ${clientIp}: ${blockCheck.reason}`);
@@ -38,11 +34,7 @@ export class SecurityMiddleware implements NestMiddleware {
       }
 
       // 2. Check DDoS protection
-      const ddosCheck = await this.ddosProtectionService.monitorTraffic(
-        clientIp,
-        path,
-        userAgent,
-      );
+      const ddosCheck = await this.ddosProtectionService.monitorTraffic(clientIp, path, userAgent);
 
       if (ddosCheck.isAttack) {
         this.logger.warn(`DDoS attack detected from IP ${clientIp}`);
@@ -67,7 +59,7 @@ export class SecurityMiddleware implements NestMiddleware {
 
       // 4. Set security headers
       const securityHeaders = this.securityHeadersService.getSecurityHeaders();
-      Object.entries(securityHeaders).forEach(([key, value]) => {
+      Object.entries<string>(securityHeaders).forEach(([key, value]) => {
         res.setHeader(key, value);
       });
 

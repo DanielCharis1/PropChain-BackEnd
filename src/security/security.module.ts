@@ -9,24 +9,9 @@ import { SecurityHeadersService } from './services/security-headers.service';
 import { SecurityController } from './security.controller';
 
 @Module({
-  imports: [
-    ConfigModule,
-    RedisModule,
-  ],
+  imports: [ConfigModule, RedisModule],
   controllers: [SecurityController],
-  providers: [
-    RateLimitingService,
-    IpBlockingService,
-    DdosProtectionService,
-    ApiQuotaService,
-    SecurityHeadersService,
-  ],
-  exports: [
-    RateLimitingService,
-    IpBlockingService,
-    DdosProtectionService,
-    ApiQuotaService,
-    SecurityHeadersService,
-  ],
+  providers: [RateLimitingService, IpBlockingService, DdosProtectionService, ApiQuotaService, SecurityHeadersService],
+  exports: [RateLimitingService, IpBlockingService, DdosProtectionService, ApiQuotaService, SecurityHeadersService],
 })
 export class SecurityModule {}

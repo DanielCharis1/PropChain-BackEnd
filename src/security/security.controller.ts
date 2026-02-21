@@ -75,14 +75,10 @@ export class SecurityController {
   @ApiResponse({ status: 201, description: 'IP blocked successfully' })
   // @RequirePermissions('security.write') // Uncomment when RBAC is available
   async blockIp(@Body() blockDto: BlockIpDto) {
-    await this.ipBlockingService.blockIp(
-      blockDto.ip,
-      blockDto.reason,
-      blockDto.duration,
-    );
-    return { 
-      message: 'IP blocked successfully', 
-      ip: blockDto.ip, 
+    await this.ipBlockingService.blockIp(blockDto.ip, blockDto.reason, blockDto.duration);
+    return {
+      message: 'IP blocked successfully',
+      ip: blockDto.ip,
       reason: blockDto.reason,
       duration: blockDto.duration,
     };
@@ -219,10 +215,8 @@ export class SecurityController {
   // @RequirePermissions('security.read') // Uncomment when RBAC is available
   async getSecurityHeaders() {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const config = isDevelopment 
-      ? this.securityHeadersService.getDevelopmentConfig()
-      : undefined;
-    
+    const config = isDevelopment ? this.securityHeadersService.getDevelopmentConfig() : undefined;
+
     const headers = this.securityHeadersService.getSecurityHeaders(config);
     return { headers, environment: process.env.NODE_ENV };
   }
@@ -247,7 +241,7 @@ export class SecurityController {
       },
     };
     const errors = this.securityHeadersService.validateConfig(config);
-    return { 
+    return {
       valid: errors.length === 0,
       errors,
       config,
