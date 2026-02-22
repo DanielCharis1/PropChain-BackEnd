@@ -188,6 +188,7 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+
 model SystemLog {
   id        String   @id @default(cuid())
   logLevel  String   @map("log_level")
