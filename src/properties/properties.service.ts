@@ -182,6 +182,10 @@ export class PropertiesService {
       maxPrice,
       minBedrooms,
       maxBedrooms,
+      minBathrooms,
+      maxBathrooms,
+      minArea,
+      maxArea,
       ownerId,
     } = query || {};
 
@@ -209,6 +213,17 @@ export class PropertiesService {
       where.status = this.mapPropertyStatus(status);
     }
 
+
+    if (city || country) {
+      const locationParts: string[] = [];
+      if (city) {
+        locationParts.push(city);
+      }
+      if (country) {
+        locationParts.push(country);
+      }
+      where.location = { contains: locationParts.join(', '), mode: 'insensitive' };
+
     // === LOCATION FILTERS ===
     // City and country filtering via location string
     if (city) {
@@ -217,6 +232,7 @@ export class PropertiesService {
 
     if (country) {
       where.location = { contains: country, mode: 'insensitive' };
+
     }
 
     // === PRICE RANGE FILTER ===
@@ -243,7 +259,28 @@ export class PropertiesService {
       }
     }
 
-    // === OWNER FILTER ===
+
+    if (minBathrooms !== undefined || maxBathrooms !== undefined) {
+      where.bathrooms = {};
+      if (minBathrooms !== undefined) {
+        where.bathrooms.gte = minBathrooms;
+      }
+      if (maxBathrooms !== undefined) {
+        where.bathrooms.lte = maxBathrooms;
+      }
+    }
+
+    if (minArea !== undefined || maxArea !== undefined) {
+      where.squareFootage = {};
+      if (minArea !== undefined) {
+        where.squareFootage.gte = minArea;
+      }
+      if (maxArea !== undefined) {
+        where.squareFootage.lte = maxArea;
+      }
+    }
+
+
     if (ownerId) {
       where.ownerId = ownerId;
     }
@@ -513,6 +550,36 @@ export class PropertiesService {
         }
       }
 
+      if (query?.minBedrooms !== undefined || query?.maxBedrooms !== undefined) {
+        where.bedrooms = {};
+        if (query.minBedrooms !== undefined) {
+          where.bedrooms.gte = query.minBedrooms;
+        }
+        if (query.maxBedrooms !== undefined) {
+          where.bedrooms.lte = query.maxBedrooms;
+        }
+      }
+
+      if (query?.minBathrooms !== undefined || query?.maxBathrooms !== undefined) {
+        where.bathrooms = {};
+        if (query.minBathrooms !== undefined) {
+          where.bathrooms.gte = query.minBathrooms;
+        }
+        if (query.maxBathrooms !== undefined) {
+          where.bathrooms.lte = query.maxBathrooms;
+        }
+      }
+
+      if (query?.minArea !== undefined || query?.maxArea !== undefined) {
+        where.squareFootage = {};
+        if (query.minArea !== undefined) {
+          where.squareFootage.gte = query.minArea;
+        }
+        if (query.maxArea !== undefined) {
+          where.squareFootage.lte = query.maxArea;
+        }
+      }
+
       const properties = await (this.prisma as any).property.findMany({
         where,
         include: {
@@ -526,7 +593,7 @@ export class PropertiesService {
         },
       });
 
-      // TODO: Implement actual distance calculation when geospatial data is available
+      // Note: Actual distance calculation requires geospatial data (PostGIS).
       // For now, return all filtered properties
       return {
         properties,
@@ -635,7 +702,7 @@ export class PropertiesService {
       });
 
       const byStatus = (statusResult || []).reduce(
-        (acc, item) => {
+        (acc: Record<string, number>, item: { status: string; _count: number }) => {
           acc[item.status] = item._count;
           return acc;
         },
@@ -643,7 +710,7 @@ export class PropertiesService {
       );
 
       const byType = (typeResult || []).reduce(
-        (acc, item) => {
+        (acc: Record<string, number>, item: { propertyType: string; _count: number }) => {
           acc[item.propertyType] = item._count;
           return acc;
         },

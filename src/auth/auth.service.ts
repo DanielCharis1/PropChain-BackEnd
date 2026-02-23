@@ -177,7 +177,10 @@ export class AuthService {
       }
     }
 
-    // Remove refresh token
+    
+    // === REFRESH TOKEN REVOCATION ===
+    // Prevents token refresh even if JWT signature is still valid
+
     await this.redisService.del(`refresh_token:${userId}`);
     this.logger.logAuth('User logged out successfully', { userId });
     return { message: 'Logged out successfully' };
@@ -302,11 +305,21 @@ export class AuthService {
   }
 
   private generateTokens(user: any) {
+eat-remove-todo-comments
     const jti = uuidv4(); // JWT ID for blacklisting
     const payload = {
       sub: user.id,
       email: user.email,
       jti,
+
+    // === UNIQUE JWT ID (JTI) ===
+    // Enables per-token blacklisting even if JWT signature is still valid
+    const jti = uuidv4();
+    const payload = { 
+      sub: user.id,      // Subject (user ID)
+      email: user.email,
+      jti: jti           // JWT ID for blacklisting
+
     };
 
     const accessToken = this.jwtService.sign(payload, {

@@ -40,6 +40,8 @@ describe('PropertiesService', () => {
     lastValuationId: null,
     yearBuilt: null,
     lotSize: null,
+    latitude: 40.7128,
+    longitude: -74.0060,
   };
 
   const mockPrismaService = {
@@ -213,6 +215,180 @@ describe('PropertiesService', () => {
               lte: 500000,
             },
           }),
+        }),
+      );
+    });
+
+    it('should apply property type filter correctly', async () => {
+      await service.findAll({ type: PropertyType.RESIDENTIAL });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            propertyType: PropertyType.RESIDENTIAL,
+          }),
+        }),
+      );
+    });
+
+    it('should apply status filter correctly', async () => {
+      await service.findAll({ status: PropertyStatus.AVAILABLE });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: 'LISTED',
+          }),
+        }),
+      );
+    });
+
+    it('should apply city and country location filter correctly', async () => {
+      await service.findAll({ city: 'New York', country: 'USA' });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            location: {
+              contains: 'New York, USA',
+              mode: 'insensitive',
+            },
+          }),
+        }),
+      );
+    });
+
+    it('should apply bedroom range filter correctly', async () => {
+      await service.findAll({ minBedrooms: 2, maxBedrooms: 4 });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            bedrooms: {
+              gte: 2,
+              lte: 4,
+            },
+          }),
+        }),
+      );
+    });
+
+    it('should apply bathroom range filter correctly', async () => {
+      await service.findAll({ minBathrooms: 1, maxBathrooms: 3 });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            bathrooms: {
+              gte: 1,
+              lte: 3,
+            },
+          }),
+        }),
+      );
+    });
+
+    it('should apply area range filter correctly', async () => {
+      await service.findAll({ minArea: 500, maxArea: 2000 });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            squareFootage: {
+              gte: 500,
+              lte: 2000,
+            },
+          }),
+        }),
+      );
+    });
+
+    it('should apply owner filter correctly', async () => {
+      await service.findAll({ ownerId: 'user_123' });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            ownerId: 'user_123',
+          }),
+        }),
+      );
+    });
+
+    it('should apply pagination correctly', async () => {
+      await service.findAll({ page: 2, limit: 5 });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 5,
+          take: 5,
+        }),
+      );
+    });
+
+    it('should apply sorting correctly', async () => {
+      await service.findAll({ sortBy: 'price', sortOrder: 'asc' });
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: { price: 'asc' },
+        }),
+      );
+    });
+
+    it('should handle empty query with defaults', async () => {
+      await service.findAll();
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 0,
+          take: 20,
+          orderBy: { createdAt: 'desc' },
+        }),
+      );
+    });
+
+    it('should handle multiple filters combined', async () => {
+      const complexQuery = {
+        search: 'luxury',
+        type: PropertyType.RESIDENTIAL,
+        status: PropertyStatus.AVAILABLE,
+        minPrice: 200000,
+        maxPrice: 800000,
+        minBedrooms: 3,
+        maxBedrooms: 5,
+        city: 'Miami',
+        page: 1,
+        limit: 15,
+      };
+
+      await service.findAll(complexQuery);
+
+      expect(mockPrismaService.property.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: [
+              { title: { contains: 'luxury', mode: 'insensitive' } },
+              { description: { contains: 'luxury', mode: 'insensitive' } },
+              { location: { contains: 'luxury', mode: 'insensitive' } },
+            ],
+            propertyType: PropertyType.RESIDENTIAL,
+            status: 'LISTED',
+            price: {
+              gte: 200000,
+              lte: 800000,
+            },
+            bedrooms: {
+              gte: 3,
+              lte: 5,
+            },
+            location: {
+              contains: 'Miami',
+              mode: 'insensitive',
+            },
+          }),
+          skip: 0,
+          take: 15,
         }),
       );
     });

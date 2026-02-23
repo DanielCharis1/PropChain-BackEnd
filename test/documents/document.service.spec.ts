@@ -23,11 +23,11 @@ const createMockFile = (
     mimetype,
     size: buffer.length,
     buffer,
-    stream: null,
+    stream: null as unknown as Express.Multer.File['stream'],
     destination: '',
     filename: '',
     path: '',
-  }) as Express.Multer.File;
+  });
 
 describe('DocumentService', () => {
   let service: DocumentService;

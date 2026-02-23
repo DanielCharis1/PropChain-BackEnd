@@ -101,7 +101,10 @@ async function bootstrap() {
   });
 }
 
-bootstrap().catch(error => {
-  console.error('Failed to start application:', error);
+bootstrap().catch(async error => {
+  // Use a temporary logger since the app hasn't started
+  const tempLogger = new (await import('./common/logging/logger.service')).StructuredLoggerService(null);
+  tempLogger.setContext('Main');
+  tempLogger.error('Failed to start application:', error.stack, {});
   process.exit(1);
 });
