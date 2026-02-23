@@ -11,11 +11,11 @@ describe('DocumentController', () => {
       mimetype: 'image/png',
       size: 10,
       buffer: Buffer.from('image'),
-      stream: null,
+      stream: null as unknown as Express.Multer.File['stream'],
       destination: '',
       filename: '',
       path: '',
-    }) as Express.Multer.File;
+    });
 
   it('parses metadata and forwards upload request', async () => {
     const service: Partial<DocumentService> = {

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma, PropertyStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma/prisma.service';
 import { PropertySearchDto } from '../dto/property-search.dto';
 import { SearchAnalyticsService } from './search-analytics.service';
@@ -19,7 +20,7 @@ constructor(
       minPrice,
       maxPrice,
       location,
-      status = 'PUBLISHED',
+      status = PropertyStatus.PUBLISHED,
     } = dto;
 
     const offset = (page - 1) * limit;
@@ -72,7 +73,7 @@ constructor(
     minPrice,
     maxPrice,
     location,
-    status = 'PUBLISHED',
+    status = PropertyStatus.PUBLISHED,
   } = dto;
 
   const offset = (page - 1) * limit;
@@ -106,7 +107,7 @@ private async normalSearch(dto: PropertySearchDto) {
     minPrice,
     maxPrice,
     location,
-    status = 'PUBLISHED',
+    status = PropertyStatus.PUBLISHED,
   } = dto;
 
   const offset = (page - 1) * limit;

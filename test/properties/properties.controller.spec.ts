@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PropertiesController } from '../../src/properties/properties.controller';
 import { PropertiesService } from '../../src/properties/properties.service';
+import { PropertySearchService } from '../../src/properties/search/property-search.service';
 import { CreatePropertyDto, PropertyStatus, PropertyType } from '../../src/properties/dto/create-property.dto';
 import { UpdatePropertyDto } from '../../src/properties/dto/update-property.dto';
 import { PropertyQueryDto } from '../../src/properties/dto/property-query.dto';
@@ -40,6 +41,8 @@ describe('PropertiesController', () => {
     lastValuationId: null,
     yearBuilt: null,
     lotSize: null,
+    latitude: 40.7128,
+    longitude: -74.006,
   };
 
   const mockPropertiesService = {
@@ -52,6 +55,10 @@ describe('PropertiesController', () => {
     updateStatus: jest.fn(),
     findByOwner: jest.fn(),
     getStatistics: jest.fn(),
+  };
+
+  const mockPropertySearchService = {
+    search: jest.fn(),
   };
 
   const mockJwtAuthGuard = {
@@ -69,6 +76,10 @@ describe('PropertiesController', () => {
         {
           provide: PropertiesService,
           useValue: mockPropertiesService,
+        },
+        {
+          provide: PropertySearchService,
+          useValue: mockPropertySearchService,
         },
       ],
     })

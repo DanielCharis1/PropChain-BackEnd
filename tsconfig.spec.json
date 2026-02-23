@@ -4,7 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./test",
     "module": "commonjs",
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "express", "multer"],
     "strict": false,
     "strictPropertyInitialization": false,
     "noUnusedLocals": false,
