@@ -1,3 +1,34 @@
+## Scaling Strategies
+
+### Vertical Scaling
+- Increase CPU, RAM, and disk IOPS on the PostgreSQL server for higher throughput.
+- Adjust `connection_limit` in the DATABASE_URL to match available resources.
+
+### Horizontal Scaling
+- Use read replicas for scaling read-heavy workloads. Configure Prisma to use replicas for read queries (future enhancement).
+- For global scale, consider managed PostgreSQL services (e.g., AWS RDS, GCP Cloud SQL) with multi-region support.
+
+### Connection Pool Tuning
+- Tune `connection_limit` and `pool_timeout` in the DATABASE_URL for optimal pool size.
+- Monitor active connections and adjust pool size as needed.
+
+### Caching
+- Use Redis for caching frequently accessed data and query results.
+- Cache count queries and first-page results for large datasets.
+
+### Partitioning and Sharding (Advanced)
+- For very large tables, consider PostgreSQL table partitioning.
+- Sharding is not natively supported by Prisma, but can be implemented at the application layer if needed.
+
+### High Availability & Failover
+- Use managed PostgreSQL with automatic failover and backups.
+- Regularly test backup and restore procedures (see backup.sh and restore.sh).
+
+### Monitoring
+- Monitor query performance and slow queries using Prisma logs and PostgreSQL tools (pg_stat_statements).
+- Set up external monitoring (e.g., Prometheus, Grafana) for database metrics.
+
+// See SETUP.md for more performance and monitoring tips.
 # PropChain Database Schema Documentation
 
 ## Overview

@@ -1,3 +1,8 @@
+
+// PrismaService manages the PrismaClient lifecycle and database connection pooling.
+// Connection pooling is configured via the DATABASE_URL environment variable.
+// Example: postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeout=30
+// See docs/DATABASE_SCHEMA.md for recommended settings.
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
@@ -5,13 +10,19 @@ import { StructuredLoggerService } from '../../common/logging/logger.service';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  /**
+   * PrismaService constructor
+   * - Configures PrismaClient with connection pooling via DATABASE_URL
+   * - See docs/DATABASE_SCHEMA.md for recommended pooling settings
+   * - Logs queries, errors, and warnings
+   */
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: StructuredLoggerService,
   ) {
+    // Get the database URL from environment/config
     const databaseUrl = configService.get<string>('DATABASE_URL');
 
-    // Connection pooling configuration via URL parameters
     // Prisma uses the connection URL to configure pooling
     // Example: postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeout=30
     super({
@@ -30,17 +41,21 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     this.logger.setContext('PrismaService');
   }
 
+  /**
+   * Initialize Prisma connection and enable query performance monitoring.
+   * Logs query durations and parameters for performance analysis.
+   */
   async onModuleInit() {
     this.logger.log('Connecting to database...');
 
-    if (this.configService.get<string>('NODE_ENV') === 'development') {
-      (this as any).$on('query', (e: any) => {
-        this.logger.logDatabase('query', e.duration, {
-          query: e.query,
-          params: e.params,
-        });
+    // Enable query performance monitoring in all environments
+    (this as any).$on('query', (e: any) => {
+      // Log query duration, SQL, and parameters
+      this.logger.logDatabase('query', e.duration, {
+        query: e.query,
+        params: e.params,
       });
-    }
+    });
 
     await this.$connect();
     this.logger.log('Database connection established');
