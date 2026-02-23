@@ -7,6 +7,22 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaProperty, PrismaUser } from '../types/prisma.types';
 import { isObject } from '../types/guards';
 
+/**
+ * PropertiesService
+ * 
+ * Core service handling all property-related operations including CRUD operations,
+ * advanced search/filtering, geospatial queries, and property management.
+ * 
+ * Features:
+ * - Full-text search across property titles, descriptions, and locations
+ * - Advanced filtering by type, price range, bedroom count, etc.
+ * - Geospatial querying for nearby property searches
+ * - Pagination and sorting support
+ * - Property valuation history and document tracking
+ * 
+ * @class PropertiesService
+ * @injectable
+ */
 @Injectable()
 export class PropertiesService {
   private readonly logger = new Logger(PropertiesService.name);
@@ -17,12 +33,44 @@ export class PropertiesService {
   ) {}
 
   /**
-   * Create a new property
+   * Create a new property listing
+   * 
+   * Validates owner exists and creates a new property entry with provided details.
+   * Formats address into a standardized location string for geospatial operations.
+   * Automatically includes owner information in response.
+   * 
+   * @param {CreatePropertyDto} createPropertyDto - Property creation data
+   * @param {string} ownerId - ID of the property owner
+   * @returns {Promise<Property>} Created property with owner details
+   * @throws {NotFoundException} If owner doesn't exist
+   * @throws {BadRequestException} If creation fails
+   * 
+   * @example
+   * ```typescript
+   * const property = await propertiesService.create({
+   *   title: '3BR Modern Apartment',
+   *   description: 'Spacious apartment in downtown',
+   *   address: {
+   *     street: '123 Main St',
+   *     city: 'New York',
+   *     state: 'NY',
+   *     zipCode: '10001',
+   *     country: 'USA'
+   *   },
+   *   type: 'APARTMENT',
+   *   price: 500000,
+   *   bedrooms: 3,
+   *   bathrooms: 2,
+   *   areaSqFt: 1500,
+   *   status: 'AVAILABLE'
+   * }, userId);
+   * ```
    */
   async create(createPropertyDto: CreatePropertyDto, ownerId: string) {
     try {
-      // Validate owner exists
-      const owner = await this.prisma.user.findUnique({
+      // === OWNER VALIDATION ===
+      // Ensures property ownership is assigned to an existing user
+      const owner = await (this.prisma as any).user.findUnique({
         where: { id: ownerId },
       });
 
@@ -30,7 +78,9 @@ export class PropertiesService {
         throw new NotFoundException(`User with ID ${ownerId} not found`);
       }
 
-      // Format the address into a single location string
+      // === ADDRESS FORMATTING ===
+      // Converts address components into standardized location string
+      // Used for geographic searching and filtering
       const location = this.formatAddress(createPropertyDto.address);
 
       const property = await (this.prisma as any).property.create({
@@ -70,7 +120,52 @@ export class PropertiesService {
   }
 
   /**
-   * Get all properties with filtering, sorting, and pagination
+   * Get all properties with advanced filtering, sorting, and pagination
+   * 
+   * Provides comprehensive property search with support for:
+   * - Full-text search across multiple fields
+   * - Type filtering (apartment, house, commercial, etc.)
+   * - Price range filtering
+   * - Bedroom/bathroom count filtering
+   * - Location filtering (city, country)
+   * - Status filtering
+   * - Custom sorting and pagination
+   * 
+   * @param {PropertyQueryDto} [query] - Query parameters for filtering and pagination
+   * @param {number} [query.page=1] - Page number for pagination
+   * @param {number} [query.limit=20] - Results per page
+   * @param {string} [query.sortBy='createdAt'] - Field to sort by
+   * @param {string} [query.sortOrder='desc'] - Sort direction (asc/desc)
+   * @param {string} [query.search] - Full-text search term
+   * @param {string} [query.type] - Property type filter
+   * @param {string} [query.status] - Property status filter
+   * @param {string} [query.city] - City filter
+   * @param {string} [query.country] - Country filter
+   * @param {number} [query.minPrice] - Minimum price filter
+   * @param {number} [query.maxPrice] - Maximum price filter
+   * @param {number} [query.minBedrooms] - Minimum bedroom count
+   * @param {number} [query.maxBedrooms] - Maximum bedroom count
+   * @param {string} [query.ownerId] - Filter by owner ID
+   * 
+   * @returns {Promise<{properties: Property[], total: number, page: number, limit: number, totalPages: number}>}
+   * Paginated results with total count
+   * 
+   * @example
+   * ```typescript
+   * // Search for 2-3 bedroom apartments under $500k in New York
+   * const results = await propertiesService.findAll({
+   *   search: 'downtown',
+   *   type: 'APARTMENT',
+   *   minBedrooms: 2,
+   *   maxBedrooms: 3,
+   *   maxPrice: 500000,
+   *   city: 'New York',
+   *   sortBy: 'price',
+   *   sortOrder: 'asc',
+   *   page: 1,
+   *   limit: 20
+   * });
+   * ```
    */
   async findAll(query?: PropertyQueryDto) {
     const {
@@ -93,7 +188,9 @@ export class PropertiesService {
     const skip = (page - 1) * limit;
     const where: Record<string, any> = {};
 
-    // Build filters
+    // === FULL-TEXT SEARCH ===
+    // Searches across title, description, and location fields
+    // Uses case-insensitive matching for better UX
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -102,14 +199,18 @@ export class PropertiesService {
       ];
     }
 
+    // === PROPERTY TYPE FILTER ===
     if (type) {
       where.propertyType = type;
     }
 
+    // === STATUS FILTER ===
     if (status) {
       where.status = this.mapPropertyStatus(status);
     }
 
+    // === LOCATION FILTERS ===
+    // City and country filtering via location string
     if (city) {
       where.location = { contains: city, mode: 'insensitive' };
     }
@@ -118,6 +219,8 @@ export class PropertiesService {
       where.location = { contains: country, mode: 'insensitive' };
     }
 
+    // === PRICE RANGE FILTER ===
+    // Supports minimum, maximum, or both bounds
     if (minPrice !== undefined || maxPrice !== undefined) {
       where.price = {};
       if (minPrice !== undefined) {
@@ -128,6 +231,8 @@ export class PropertiesService {
       }
     }
 
+    // === BEDROOM COUNT FILTER ===
+    // Allows filtering by minimum, maximum, or range
     if (minBedrooms !== undefined || maxBedrooms !== undefined) {
       where.bedrooms = {};
       if (minBedrooms !== undefined) {
@@ -138,11 +243,14 @@ export class PropertiesService {
       }
     }
 
+    // === OWNER FILTER ===
     if (ownerId) {
       where.ownerId = ownerId;
     }
 
     try {
+      // === PARALLEL DATA FETCHING ===
+      // Fetch properties and total count concurrently for better performance
       const [properties, total] = await Promise.all([
         (this.prisma as any).property.findMany({
           where,
@@ -176,13 +284,30 @@ export class PropertiesService {
   }
 
   /**
-   * Get a single property by ID
+   * Get a single property by ID with full details
+   * 
+   * Retrieves comprehensive property information including:
+   * - Owner details
+   * - Associated documents (deeds, certificates, etc.)
+   * - Recent valuation history (last 5 valuations)
+   * 
+   * @param {string} id - Property ID
+   * @returns {Promise<Property>} Complete property object with related data
+   * @throws {NotFoundException} If property doesn't exist
+   * @throws {BadRequestException} If fetch fails
+   * 
+   * @example
+   * ```typescript
+   * const property = await propertiesService.findOne('prop-id-123');
+   * // Returns property with owner, documents, and valuations
+   * ```
    */
   async findOne(id: string) {
     try {
       const property = await (this.prisma as any).property.findUnique({
         where: { id },
         include: {
+          // Include owner information for display
           owner: {
             select: {
               id: true,
@@ -190,6 +315,7 @@ export class PropertiesService {
               role: true,
             },
           },
+          // Include associated documents (deeds, certificates, etc.)
           documents: {
             select: {
               id: true,
@@ -199,6 +325,8 @@ export class PropertiesService {
               createdAt: true,
             },
           },
+          // Include recent valuations sorted by date (newest first)
+          // Limited to last 5 for performance
           valuations: {
             orderBy: { valuationDate: 'desc' },
             take: 5,
@@ -221,11 +349,31 @@ export class PropertiesService {
   }
 
   /**
-   * Update a property
+   * Update an existing property
+   * 
+   * Supports partial updates - only provided fields are updated.
+   * Validates property existence before updating.
+   * Handles address formatting for location updates.
+   * 
+   * @param {string} id - Property ID to update
+   * @param {UpdatePropertyDto} updatePropertyDto - Fields to update
+   * @returns {Promise<Property>} Updated property object
+   * @throws {NotFoundException} If property doesn't exist
+   * @throws {BadRequestException} If update fails
+   * 
+   * @example
+   * ```typescript
+   * // Update only the price and status
+   * const updated = await propertiesService.update(id, {
+   *   price: 550000,
+   *   status: 'PENDING'
+   * });
+   * ```
    */
   async update(id: string, updatePropertyDto: UpdatePropertyDto) {
     try {
-      // Check if property exists
+      // === EXISTENCE VALIDATION ===
+      // Ensures property exists before attempting update
       const existingProperty = await (this.prisma as any).property.findUnique({
         where: { id },
       });
@@ -236,6 +384,9 @@ export class PropertiesService {
 
       const updateData: any = {};
 
+      // === SELECTIVE FIELD UPDATES ===
+      // Only update fields that were explicitly provided
+      // This allows partial updates without requiring all fields
       if (updatePropertyDto.title !== undefined) {
         updateData.title = updatePropertyDto.title;
       }
@@ -250,6 +401,7 @@ export class PropertiesService {
 
       if (updatePropertyDto.address) {
         updateData.location = this.formatAddress(updatePropertyDto.address);
+      }
       }
 
       if (updatePropertyDto.status !== undefined) {
