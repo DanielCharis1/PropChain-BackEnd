@@ -2,9 +2,9 @@ name: Comprehensive Testing Pipeline
 
 on:
   push:
-    branches: [ main, develop, 'feature/*' ]
+    branches: [main, develop, 'feature/*']
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 env:
   NODE_VERSION: '18'

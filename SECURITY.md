@@ -7,23 +7,26 @@ This document describes the security enhancements implemented in the PropChain a
 ## Security Features Implemented
 
 ### 1. Console Logging Removal
+
 - **Issue**: Sensitive information (tokens, emails) was exposed in production logs
 - **Solution**: Replaced all `console.log` statements with structured logging using `StructuredLoggerService`
 - **Files Modified**: `src/auth/auth.service.ts`
 
 ### 2. Token Blacklisting
+
 - **Issue**: JWT tokens couldn't be revoked once issued
 - **Solution**: Implemented token blacklisting using Redis with automatic TTL expiration
 - **Features**:
   - Blacklist tokens on logout with proper TTL
   - JWT guard checks blacklisted tokens
   - Automatic cleanup of expired blacklisted tokens
-- **Files Modified**: 
+- **Files Modified**:
   - `src/auth/auth.service.ts`
   - `src/auth/guards/jwt-auth.guard.ts`
   - `src/auth/auth.controller.ts`
 
 ### 3. Brute Force Protection
+
 - **Issue**: No protection against password guessing attacks
 - **Solution**: Implemented login attempt tracking with account locking
 - **Features**:
@@ -32,11 +35,12 @@ This document describes the security enhancements implemented in the PropChain a
   - Automatic lockout expiration
   - Exponential backoff for repeated failures
 - **Files Created**: `src/auth/guards/login-attempts.guard.ts`
-- **Files Modified**: 
+- **Files Modified**:
   - `src/auth/auth.controller.ts`
   - `src/auth/auth.module.ts`
 
 ### 4. Enhanced Password Security
+
 - **Issue**: Weak password requirements and no validation
 - **Solution**: Implemented comprehensive password validation and security policies
 - **Features**:
@@ -44,15 +48,16 @@ This document describes the security enhancements implemented in the PropChain a
   - Password pattern validation (length, special chars, numbers, uppercase)
   - Common password pattern detection
   - Configurable bcrypt rounds
-- **Files Created**: 
+- **Files Created**:
   - `src/common/validators/password.validator.ts`
-- **Files Modified**: 
+- **Files Modified**:
   - `src/users/user.service.ts`
   - `src/users/users.module.ts`
   - `src/config/configuration.ts`
   - `src/config/interfaces/joi-schema-config.interface.ts`
 
 ### 5. Session Management
+
 - **Issue**: No proper session tracking or management
 - **Solution**: Implemented Redis-based session management
 - **Features**:
@@ -60,11 +65,12 @@ This document describes the security enhancements implemented in the PropChain a
   - Session timeout configuration
   - API endpoints for session management
   - Concurrent session limiting
-- **Files Modified**: 
+- **Files Modified**:
   - `src/auth/auth.service.ts`
   - `src/auth/auth.controller.ts`
 
 ### 6. Multi-Factor Authentication (MFA)
+
 - **Issue**: No additional authentication factors beyond password
 - **Solution**: Implemented TOTP-based MFA with backup codes
 - **Features**:
@@ -108,6 +114,7 @@ SESSION_SECRET=your-session-secret-key-change-this-in-production
 ## API Endpoints
 
 ### Authentication
+
 - `POST /auth/login` - Login with email/password (protected by brute force guard)
 - `POST /auth/web3-login` - Web3 wallet login
 - `POST /auth/logout` - Logout and blacklist current token
@@ -118,11 +125,13 @@ SESSION_SECRET=your-session-secret-key-change-this-in-production
 - `GET /auth/verify-email/:token` - Verify email address
 
 ### Session Management
+
 - `GET /auth/sessions` - Get all active sessions
 - `DELETE /auth/sessions/:sessionId` - Invalidate specific session
 - `DELETE /auth/sessions` - Invalidate all sessions
 
 ### MFA Management
+
 - `POST /mfa/setup` - Generate MFA setup QR code
 - `POST /mfa/verify` - Verify and complete MFA setup
 - `GET /mfa/status` - Get MFA status
@@ -133,10 +142,12 @@ SESSION_SECRET=your-session-secret-key-change-this-in-production
 ## Security Testing
 
 ### Unit Tests
+
 - `test/auth/mfa.service.spec.ts` - MFA service unit tests
 - Password validation tests in user service tests
 
 ### E2E Tests
+
 - `test/auth/security.e2e-spec.ts` - Comprehensive security tests including:
   - Token blacklisting
   - Brute force protection
@@ -146,6 +157,7 @@ SESSION_SECRET=your-session-secret-key-change-this-in-production
 ## Redis Schema
 
 ### Security Keys
+
 ```
 # Login Attempts
 login_attempts:{email} -> {count} (expires after lockout duration)

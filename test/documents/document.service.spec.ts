@@ -15,19 +15,18 @@ const createMockFile = (
   buffer: Buffer,
   mimetype = 'application/pdf',
   originalname = 'document.pdf',
-): Express.Multer.File =>
-  ({
-    fieldname: 'file',
-    originalname,
-    encoding: '7bit',
-    mimetype,
-    size: buffer.length,
-    buffer,
-    stream: null as unknown as Express.Multer.File['stream'],
-    destination: '',
-    filename: '',
-    path: '',
-  });
+): Express.Multer.File => ({
+  fieldname: 'file',
+  originalname,
+  encoding: '7bit',
+  mimetype,
+  size: buffer.length,
+  buffer,
+  stream: null as unknown as Express.Multer.File['stream'],
+  destination: '',
+  filename: '',
+  path: '',
+});
 
 describe('DocumentService', () => {
   let service: DocumentService;

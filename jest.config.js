@@ -3,9 +3,12 @@ module.exports = {
   rootDir: '.',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': ['ts-jest', {
-      tsconfig: 'tsconfig.spec.json',
-    }],
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.spec.json',
+      },
+    ],
   },
   collectCoverageFrom: [
     'src/**/*.(t|j)s',
@@ -17,18 +20,13 @@ module.exports = {
     '!src/**/*.mock.ts',
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: [
-    'text',
-    'lcov',
-    'html',
-    'json',
-  ],
+  coverageReporters: ['text', 'lcov', 'html', 'json'],
   coverageThreshold: {
     global: {
       branches: 28,
       functions: 35,
       lines: 35,
-      statements: 35
+      statements: 35,
     },
   },
   testEnvironment: 'node',

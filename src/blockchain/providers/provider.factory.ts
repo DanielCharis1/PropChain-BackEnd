@@ -11,7 +11,9 @@ export class ProviderFactory {
     };
 
     const rpcUrl = rpcMap[chain];
-    if (!rpcUrl) throw new Error(`RPC not configured for ${chain}`);
+    if (!rpcUrl) {
+      throw new Error(`RPC not configured for ${chain}`);
+    }
 
     return new JsonRpcProvider(rpcUrl);
   }

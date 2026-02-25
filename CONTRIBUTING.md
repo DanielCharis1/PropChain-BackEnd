@@ -10,6 +10,7 @@ We welcome contributions from the community! This guide will help you get starte
 ### Prerequisites
 
 Before contributing, ensure you have:
+
 - **Node.js** v18+ (LTS recommended)
 - **PostgreSQL** v14+
 - **Redis** (for caching)
@@ -20,23 +21,27 @@ Before contributing, ensure you have:
 ### Development Setup
 
 1. **Fork and Clone**
+
    ```bash
    git clone https://github.com/MettaChain/PropChain-BackEnd.git
    cd PropChain-BackEnd
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
+
    ```bash
    cp .env.example .env
    # Configure your local environment variables
    ```
 
 4. **Database Setup**
+
    ```bash
    createdb propchain_dev
    npm run migrate
@@ -67,11 +72,13 @@ Before contributing, ensure you have:
 ### 🔧 Code Contributions
 
 #### 1. Create an Issue
+
 - Search existing issues to avoid duplicates
 - Create a new issue describing your proposed changes
 - Wait for maintainer approval before starting work
 
 #### 2. Set Up Your Branch
+
 ```bash
 git checkout -b feature/your-feature-name
 # or
@@ -81,12 +88,14 @@ git checkout -b fix/your-bug-fix
 #### 3. Development Guidelines
 
 ##### Code Style
+
 - Follow **ESLint** and **Prettier** configurations
 - Use **TypeScript** strict mode
 - Write **descriptive commit messages**
 - Keep functions small and focused
 
 ##### Code Structure
+
 ```
 src/
 ├── controllers/     # API route handlers
@@ -99,6 +108,7 @@ src/
 ```
 
 ##### Best Practices
+
 - **Error Handling**: Use proper HTTP status codes and error responses
 - **Validation**: Validate all input data using DTOs
 - **Security**: Sanitize inputs and implement proper authentication
@@ -121,6 +131,7 @@ npm run test:coverage
 ```
 
 **Testing Requirements:**
+
 - Unit tests for all new functions
 - Integration tests for API endpoints
 - E2E tests for critical user flows
@@ -129,6 +140,7 @@ npm run test:coverage
 #### 5. Smart Contract Contributions
 
 For smart contract changes:
+
 ```bash
 # Compile contracts
 npm run compile:contracts
@@ -141,6 +153,7 @@ npm run deploy:testnet
 ```
 
 **Contract Guidelines:**
+
 - Follow **Solidity** or **Rust** best practices
 - Include comprehensive test coverage
 - Add inline documentation
@@ -160,6 +173,7 @@ test(contracts): add ERC721 tokenization tests
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -176,6 +190,7 @@ test(contracts): add ERC721 tokenization tests
    - Code comments for complex logic
 
 2. **Run Full Test Suite**
+
    ```bash
    npm run test:all
    npm run lint
@@ -189,22 +204,27 @@ test(contracts): add ERC721 tokenization tests
    - Add testing instructions
 
 4. **PR Template**
+
    ```markdown
    ## Description
+
    Brief description of changes
 
    ## Type of Change
+
    - [ ] Bug fix
    - [ ] New feature
    - [ ] Breaking change
    - [ ] Documentation update
 
    ## Testing
+
    - [ ] Unit tests pass
    - [ ] Integration tests pass
    - [ ] Manual testing completed
 
    ## Checklist
+
    - [ ] Code follows style guidelines
    - [ ] Self-review completed
    - [ ] Documentation updated
@@ -243,12 +263,14 @@ test(contracts): add ERC721 tokenization tests
 ## 📚 Development Resources
 
 ### Documentation
+
 - [API Documentation](./docs/api.md)
 - [Architecture Guide](./docs/architecture.md)
 - [Smart Contract Docs](./docs/contracts.md)
 - [Deployment Guide](./docs/deployment.md)
 
 ### Tools & Extensions
+
 - **VS Code Extensions**:
   - TypeScript Hero
   - ESLint
@@ -257,6 +279,7 @@ test(contracts): add ERC721 tokenization tests
   - Thunder Client (API testing)
 
 ### Learning Resources
+
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Ethereum Development Guide](https://ethereum.org/en/developers/)
@@ -285,6 +308,7 @@ We are committed to providing a welcoming and inclusive environment. Please read
 ### Contributors
 
 We value all contributions! Contributors will be:
+
 - Listed in our README
 - Mentioned in release notes
 - Invited to our contributor Discord channel
@@ -303,6 +327,7 @@ We value all contributions! Contributors will be:
 ### Version Management
 
 We follow [Semantic Versioning](https://semver.org/):
+
 - **MAJOR**: Breaking changes
 - **MINOR**: New features (backward compatible)
 - **PATCH**: Bug fixes (backward compatible)
@@ -331,6 +356,7 @@ We follow [Semantic Versioning](https://semver.org/):
 ### Common Issues
 
 **Database Connection Errors**
+
 ```bash
 # Check PostgreSQL status
 pg_ctl status
@@ -340,6 +366,7 @@ npm run db:reset
 ```
 
 **Smart Contract Compilation**
+
 ```bash
 # Clear cache
 npm run clean
@@ -347,6 +374,7 @@ npm run compile:contracts
 ```
 
 **Test Failures**
+
 ```bash
 # Clear Jest cache
 npm run test:clear

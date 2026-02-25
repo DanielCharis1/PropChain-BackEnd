@@ -48,6 +48,7 @@ Content-Type: application/json
 ```
 
 **Response** (201 Created):
+
 ```json
 {
   "id": "cly1234567890",
@@ -74,6 +75,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Response** (200 OK):
+
 ```json
 [
   {
@@ -150,7 +152,6 @@ import { ApiKey } from '../common/decorators/api-key.decorator';
 @Controller('properties')
 @UseGuards(ApiKeyGuard)
 export class PropertiesController {
-  
   @Get()
   @RequireScopes('read:properties')
   async findAll(@ApiKey() apiKey: any) {
@@ -176,7 +177,6 @@ import { RequireScopes } from '../common/decorators/require-scopes.decorator';
 
 @Controller('external-api')
 export class ExternalApiController {
-  
   // This endpoint requires API key with read:properties scope
   @Get('properties')
   @UseGuards(ApiKeyGuard)
@@ -266,15 +266,15 @@ const BASE_URL = 'https://api.propchain.io';
 // Using Authorization header
 const response = await axios.get(`${BASE_URL}/properties`, {
   headers: {
-    'Authorization': `Bearer ${API_KEY}`
-  }
+    Authorization: `Bearer ${API_KEY}`,
+  },
 });
 
 // Or using X-API-Key header
 const response = await axios.get(`${BASE_URL}/properties`, {
   headers: {
-    'X-API-Key': API_KEY
-  }
+    'X-API-Key': API_KEY,
+  },
 });
 ```
 
@@ -314,29 +314,35 @@ curl -H "X-API-Key: propchain_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6" \
 ## Troubleshooting
 
 ### "Invalid API key format"
+
 - Ensure the key starts with `propchain_live_`
 - Check for extra spaces or line breaks
 
 ### "Invalid or revoked API key"
+
 - Key might be revoked - check with `GET /api-keys/:id`
 - Key might be from a different environment
 
 ### "Insufficient permissions"
+
 - Check that the API key has the required scopes
 - Update scopes with `PATCH /api-keys/:id`
 
 ### "Rate limit exceeded"
+
 - Wait 1 minute for the rate limit window to reset
 - Or increase the rate limit for the key
 
 ## Testing
 
 Run unit tests:
+
 ```bash
 npm run test -- api-key.service.spec.ts
 ```
 
 Run e2e tests:
+
 ```bash
 npm run test:e2e -- api-keys.e2e-spec.ts
 ```

@@ -7,17 +7,20 @@ A professional, enterprise-grade pagination system has been successfully impleme
 ## 📁 Files Created
 
 ### Core Pagination Module
+
 - [src/common/pagination/pagination.dto.ts](src/common/pagination/pagination.dto.ts) - DTOs with validation
 - [src/common/pagination/pagination.service.ts](src/common/pagination/pagination.service.ts) - Core service logic
 - [src/common/pagination/index.ts](src/common/pagination/index.ts) - Module exports
 - [src/common/pagination/PAGINATION_GUIDE.md](src/common/pagination/PAGINATION_GUIDE.md) - Comprehensive documentation
 
 ### Tests
+
 - [test/pagination/pagination.service.spec.ts](test/pagination/pagination.service.spec.ts) - Unit tests (80+ test cases)
 - [test/pagination/pagination.integration.spec.ts](test/pagination/pagination.integration.spec.ts) - Integration tests
 - [test/pagination/pagination.performance.ts](test/pagination/pagination.performance.ts) - Performance benchmarks
 
 ### Updated Files
+
 - [src/api-keys/api-key.service.ts](src/api-keys/api-key.service.ts) - Added pagination support
 - [src/api-keys/api-key.controller.ts](src/api-keys/api-key.controller.ts) - Added pagination query support
 - [src/api-keys/api-keys.module.ts](src/api-keys/api-keys.module.ts) - Added PaginationService provider
@@ -25,29 +28,35 @@ A professional, enterprise-grade pagination system has been successfully impleme
 ## 🎯 Acceptance Criteria - All Met
 
 ✅ **Create pagination DTO with page, limit, and sort parameters**
+
 - PaginationQueryDto with validation
 - Supports page (1-indexed), limit (1-100), sortBy, sortOrder
 
 ✅ **Implement pagination helper service**
+
 - PaginationService with 7 core methods
 - calculatePagination, createMetadata, formatResponse, etc.
 - Reusable across all list endpoints
 
 ✅ **Add pagination metadata to list responses**
+
 - PaginationMetadataDto with 8 fields
 - total, page, limit, pages, hasNext, hasPrev, sortBy, sortOrder
 - Generic PaginatedResponseDto wrapper
 
 ✅ **Update all list endpoints to use pagination**
+
 - API Keys endpoint fully implemented with pagination
 - Template for other endpoints provided
 
 ✅ **Add pagination validation and limits**
+
 - Min/max validation with sensible defaults
 - Hard limit of 100 items per page
 - Automatic parameter normalization
 
 ✅ **Unit tests for pagination logic**
+
 - 80+ unit test cases covering:
   - Pagination calculation
   - Metadata generation
@@ -55,12 +64,14 @@ A professional, enterprise-grade pagination system has been successfully impleme
   - Edge cases and validation
 
 ✅ **Integration tests for paginated endpoints**
+
 - API integration tests
 - Data consistency verification
 - Sorting and filtering validation
 - Edge case handling
 
 ✅ **Performance tests for large datasets**
+
 - Benchmarks for all core operations
 - Tests with datasets from 0 to 1,000,000 items
 - Performance metrics (operations/second)
@@ -68,18 +79,20 @@ A professional, enterprise-grade pagination system has been successfully impleme
 ## 📊 Key Features
 
 ### Query Parameters
+
 ```
 GET /api-keys?page=1&limit=10&sortBy=createdAt&sortOrder=desc
 ```
 
-| Parameter | Type | Default | Range |
-|-----------|------|---------|-------|
-| page | int | 1 | 1-∞ |
-| limit | int | 10 | 1-100 |
-| sortBy | string | createdAt | Any field |
-| sortOrder | enum | desc | asc, desc |
+| Parameter | Type   | Default   | Range     |
+| --------- | ------ | --------- | --------- |
+| page      | int    | 1         | 1-∞       |
+| limit     | int    | 10        | 1-100     |
+| sortBy    | string | createdAt | Any field |
+| sortOrder | enum   | desc      | asc, desc |
 
 ### Response Format
+
 ```json
 {
   "data": [...],
@@ -97,6 +110,7 @@ GET /api-keys?page=1&limit=10&sortBy=createdAt&sortOrder=desc
 ```
 
 ### Service Methods
+
 1. **calculatePagination** - Get skip/take for database queries
 2. **createMetadata** - Build pagination metadata
 3. **formatResponse** - Wrap data with pagination info
@@ -105,13 +119,14 @@ GET /api-keys?page=1&limit=10&sortBy=createdAt&sortOrder=desc
 
 ## 🧪 Test Coverage
 
-| Test Suite | Count | Coverage |
-|------------|-------|----------|
-| Unit Tests | 80+ | Service logic, validation, edge cases |
-| Integration Tests | 12+ | API endpoints, data consistency |
-| Performance Tests | 6 | Benchmarks, large datasets |
+| Test Suite        | Count | Coverage                              |
+| ----------------- | ----- | ------------------------------------- |
+| Unit Tests        | 80+   | Service logic, validation, edge cases |
+| Integration Tests | 12+   | API endpoints, data consistency       |
+| Performance Tests | 6     | Benchmarks, large datasets            |
 
 ### Running Tests
+
 ```bash
 # Unit tests
 npm run test:unit -- test/pagination/pagination.service.spec.ts
@@ -126,12 +141,14 @@ ts-node test/pagination/pagination.performance.ts
 ## 📈 Performance Metrics
 
 Expected performance (on typical hardware):
+
 - **calculatePagination**: ~1.3M ops/second
 - **createMetadata**: ~800K ops/second
 - **formatResponse**: <0.1ms per call
 - **getPrismaOptions**: ~1.1M ops/second
 
 ### Large Dataset Handling
+
 - 1,000 items: <1ms
 - 10,000 items: <1ms
 - 100,000 items: <1ms
@@ -140,6 +157,7 @@ Expected performance (on typical hardware):
 ## 🔧 Usage Examples
 
 ### Basic Implementation
+
 ```typescript
 async findAll(paginationQuery?: PaginationQueryDto) {
   const { skip, take, orderBy } = this.paginationService.getPrismaOptions(
@@ -157,6 +175,7 @@ async findAll(paginationQuery?: PaginationQueryDto) {
 ```
 
 ### Controller Integration
+
 ```typescript
 @Get()
 async findAll(@Query() paginationQuery: PaginationQueryDto) {
@@ -167,6 +186,7 @@ async findAll(@Query() paginationQuery: PaginationQueryDto) {
 ## 📚 Documentation
 
 Comprehensive documentation available in [PAGINATION_GUIDE.md](src/common/pagination/PAGINATION_GUIDE.md) including:
+
 - Quick start guide
 - API reference
 - Implementation guide

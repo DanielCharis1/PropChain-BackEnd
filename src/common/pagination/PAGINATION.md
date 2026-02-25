@@ -43,9 +43,7 @@ export class ItemsController {
   ) {}
 
   @Get()
-  async findAll(
-    @Query() paginationQuery: PaginationQueryDto,
-  ): Promise<PaginatedResponseDto<ItemDto>> {
+  async findAll(@Query() paginationQuery: PaginationQueryDto): Promise<PaginatedResponseDto<ItemDto>> {
     return this.itemsService.findAll(paginationQuery);
   }
 }
@@ -64,9 +62,7 @@ export class ItemsService {
     private readonly paginationService: PaginationService,
   ) {}
 
-  async findAll(
-    paginationQuery?: PaginationQueryDto,
-  ): Promise<ItemDto[] | PaginatedResponseDto<ItemDto>> {
+  async findAll(paginationQuery?: PaginationQueryDto): Promise<ItemDto[] | PaginatedResponseDto<ItemDto>> {
     if (!paginationQuery) {
       // Backward compatibility: return all items without pagination
       return this.prisma.item.findMany();
@@ -107,12 +103,12 @@ export class ItemsModule {}
 
 All list endpoints support the following query parameters:
 
-| Parameter  | Type     | Default | Min | Max | Description |
-|-----------|----------|---------|-----|-----|-------------|
-| `page`    | integer  | 1       | 1   | ∞   | Page number (1-indexed) |
-| `limit`   | integer  | 10      | 1   | 100 | Items per page |
-| `sortBy`  | string   | createdAt | - | - | Field to sort by |
-| `sortOrder` | enum   | desc    | - | - | Sort direction (asc or desc) |
+| Parameter   | Type    | Default   | Min | Max | Description                  |
+| ----------- | ------- | --------- | --- | --- | ---------------------------- |
+| `page`      | integer | 1         | 1   | ∞   | Page number (1-indexed)      |
+| `limit`     | integer | 10        | 1   | 100 | Items per page               |
+| `sortBy`    | string  | createdAt | -   | -   | Field to sort by             |
+| `sortOrder` | enum    | desc      | -   | -   | Sort direction (asc or desc) |
 
 ## Response Format
 
@@ -142,35 +138,39 @@ All list endpoints support the following query parameters:
 
 ### Pagination Metadata Fields
 
-| Field     | Type    | Description |
-|-----------|---------|-------------|
-| `total`   | number  | Total number of items matching the query |
-| `page`    | number  | Current page number |
-| `limit`   | number  | Items per page |
-| `pages`   | number  | Total number of pages |
-| `hasNext` | boolean | Whether a next page exists |
-| `hasPrev` | boolean | Whether a previous page exists |
-| `sortBy`  | string  | Field used for sorting |
-| `sortOrder` | enum  | Sort direction (asc or desc) |
+| Field       | Type    | Description                              |
+| ----------- | ------- | ---------------------------------------- |
+| `total`     | number  | Total number of items matching the query |
+| `page`      | number  | Current page number                      |
+| `limit`     | number  | Items per page                           |
+| `pages`     | number  | Total number of pages                    |
+| `hasNext`   | boolean | Whether a next page exists               |
+| `hasPrev`   | boolean | Whether a previous page exists           |
+| `sortBy`    | string  | Field used for sorting                   |
+| `sortOrder` | enum    | Sort direction (asc or desc)             |
 
 ## API Examples
 
 ### Get First Page (Default)
+
 ```bash
 curl https://api.propchain.io/api-keys
 ```
 
 ### Get Second Page with 20 Items Per Page
+
 ```bash
 curl "https://api.propchain.io/api-keys?page=2&limit=20"
 ```
 
 ### Sort by Name in Ascending Order
+
 ```bash
 curl "https://api.propchain.io/api-keys?page=1&limit=10&sortBy=name&sortOrder=asc"
 ```
 
 ### Get Maximum Items Per Page
+
 ```bash
 curl "https://api.propchain.io/api-keys?page=1&limit=100"
 ```
@@ -238,14 +238,13 @@ Applied: page=1, limit=100
 ### Optimization Tips
 
 1. **Always fetch total count and items in parallel**
+
    ```typescript
-   const [items, total] = await Promise.all([
-     this.prisma.item.findMany({ skip, take }),
-     this.prisma.item.count(),
-   ]);
+   const [items, total] = await Promise.all([this.prisma.item.findMany({ skip, take }), this.prisma.item.count()]);
    ```
 
 2. **Add database indexes on sort fields**
+
    ```sql
    CREATE INDEX idx_items_created_at ON items(created_at);
    CREATE INDEX idx_items_name ON items(name);
@@ -258,24 +257,26 @@ Applied: page=1, limit=100
 4. **Consider caching for static lists**
    ```typescript
    if (!paginationQuery?.page || paginationQuery.page === 1) {
-     return this.cache.get('items:page:1') ?? 
-            this.fetchAndCacheFirstPage();
+     return this.cache.get('items:page:1') ?? this.fetchAndCacheFirstPage();
    }
    ```
 
 ## Testing
 
 ### Unit Tests
+
 ```bash
 npm run test -- pagination.service.spec.ts
 ```
 
 ### Integration Tests
+
 ```bash
 npm run test -- api-keys.pagination.spec.ts
 ```
 
 ### Performance Tests
+
 ```bash
 npm run test -- pagination.performance.spec.ts
 ```
@@ -285,6 +286,7 @@ npm run test -- pagination.performance.spec.ts
 ### Updating Existing Endpoints
 
 1. **Add PaginationService to module**
+
    ```typescript
    @Module({
      providers: [ItemsService, PaginationService],
@@ -292,6 +294,7 @@ npm run test -- pagination.performance.spec.ts
    ```
 
 2. **Update service method signature**
+
    ```typescript
    // Before
    async findAll(): Promise<ItemDto[]>
@@ -301,6 +304,7 @@ npm run test -- pagination.performance.spec.ts
    ```
 
 3. **Update controller method signature**
+
    ```typescript
    // Before
    @Get()
@@ -316,16 +320,21 @@ npm run test -- pagination.performance.spec.ts
 ## Common Issues & Solutions
 
 ### Issue: "Can't resolve dependencies of PaginationService"
+
 **Solution**: Ensure `PaginationService` is provided in the module's `providers` array.
 
 ### Issue: Maximum limit not enforced
+
 **Solution**: Always use `getPrismaOptions()` or `calculatePagination()` instead of manual offset calculations.
 
 ### Issue: Inconsistent sort results
+
 **Solution**: Ensure the sort field exists in the model and add appropriate database indexes.
 
 ### Issue: Slow pagination queries
-**Solution**: 
+
+**Solution**:
+
 - Add indexes on sort fields
 - Fetch items and count in parallel
 - Consider implementing cursor-based pagination for large datasets

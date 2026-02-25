@@ -3,19 +3,18 @@ import { DocumentAccessLevel, DocumentType } from '../../src/documents/document.
 import { DocumentService } from '../../src/documents/document.service';
 
 describe('DocumentController', () => {
-  const createMockFile = (): Express.Multer.File =>
-    ({
-      fieldname: 'file',
-      originalname: 'photo.png',
-      encoding: '7bit',
-      mimetype: 'image/png',
-      size: 10,
-      buffer: Buffer.from('image'),
-      stream: null as unknown as Express.Multer.File['stream'],
-      destination: '',
-      filename: '',
-      path: '',
-    });
+  const createMockFile = (): Express.Multer.File => ({
+    fieldname: 'file',
+    originalname: 'photo.png',
+    encoding: '7bit',
+    mimetype: 'image/png',
+    size: 10,
+    buffer: Buffer.from('image'),
+    stream: null as unknown as Express.Multer.File['stream'],
+    destination: '',
+    filename: '',
+    path: '',
+  });
 
   it('parses metadata and forwards upload request', async () => {
     const service: Partial<DocumentService> = {

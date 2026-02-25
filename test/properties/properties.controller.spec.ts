@@ -172,8 +172,7 @@ describe('PropertiesController', () => {
     });
   });
 
-  describe('searchNearby', () => {
-  });
+  describe('searchNearby', () => {});
 
   describe('getStatistics', () => {
     it('should return property statistics', async () => {

@@ -41,7 +41,7 @@ describe('PropertiesService', () => {
     yearBuilt: null,
     lotSize: null,
     latitude: 40.7128,
-    longitude: -74.0060,
+    longitude: -74.006,
   };
 
   const mockPrismaService = {

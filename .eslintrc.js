@@ -6,10 +6,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   root: true,
   env: {
     node: true,
@@ -35,24 +32,27 @@ module.exports = {
     'prefer-arrow-callback': 'error',
     'arrow-spacing': 'error',
     'comma-dangle': ['error', 'always-multiline'],
-    'semi': ['error', 'always'],
-    'quotes': 'off',
-    'indent': 'off',
+    semi: ['error', 'always'],
+    quotes: 'off',
+    indent: 'off',
     '@typescript-eslint/indent': 'off',
     'max-len': 'off',
     'eol-last': 'error',
     'no-trailing-spaces': 'error',
     'padded-blocks': ['error', 'never'],
-    'space-before-function-paren': ['error', {
-      'anonymous': 'always',
-      'named': 'never',
-      'asyncArrow': 'always'
-    }],
+    'space-before-function-paren': [
+      'error',
+      {
+        anonymous: 'always',
+        named: 'never',
+        asyncArrow: 'always',
+      },
+    ],
     'keyword-spacing': 'error',
     'space-infix-ops': 'error',
     'object-curly-spacing': ['error', 'always'],
     'array-bracket-spacing': ['error', 'never'],
     'brace-style': ['error', '1tbs'],
-    'curly': 'error'
+    curly: 'error',
   },
 };

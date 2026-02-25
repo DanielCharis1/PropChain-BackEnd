@@ -10,7 +10,7 @@ beforeAll(async () => {
   process.env.DATABASE_URL = process.env.E2E_DATABASE_URL || 'postgresql://test:test@localhost:5432/propchain_e2e';
   process.env.REDIS_URL = process.env.E2E_REDIS_URL || 'redis://localhost:6379/3';
   process.env.PORT = '0'; // Use random port
-  
+
   console.log('Setting up E2E test environment...');
 });
 
@@ -25,45 +25,47 @@ afterAll(async () => {
       ConfigModule.forRoot({
         isGlobal: true,
         ignoreEnvFile: true,
-        load: [() => ({
-          NODE_ENV: 'test',
-          DATABASE_URL: process.env.DATABASE_URL,
-          REDIS_URL: process.env.REDIS_URL,
-          JWT_SECRET: 'e2e-test-jwt-secret',
-          JWT_EXPIRES_IN: '1h',
-          S3_BUCKET: 'e2e-test-bucket',
-          S3_REGION: 'us-east-1',
-          PORT: '0',
-        })],
+        load: [
+          () => ({
+            NODE_ENV: 'test',
+            DATABASE_URL: process.env.DATABASE_URL,
+            REDIS_URL: process.env.REDIS_URL,
+            JWT_SECRET: 'e2e-test-jwt-secret',
+            JWT_EXPIRES_IN: '1h',
+            S3_BUCKET: 'e2e-test-bucket',
+            S3_REGION: 'us-east-1',
+            PORT: '0',
+          }),
+        ],
       }),
       ...moduleImports,
     ],
   }).compile();
 
   const app = moduleRef.createNestApplication();
-  
+
   // Configure app for testing
   app.enableCors({
     origin: '*',
     credentials: true,
   });
-  
+
   await app.init();
-  
+
   return app;
 };
 
 // HTTP request utilities
 (global as any).makeRequest = (app: INestApplication) => {
   const agent = request.agent(app.getHttpServer());
-  
+
   return {
     get: (url: string) => agent.get(url),
     post: (url: string) => agent.post(url),
     put: (url: string) => agent.put(url),
     patch: (url: string) => agent.patch(url),
     delete: (url: string) => agent.delete(url),
-    
+
     // Auth helpers
     withAuth: (token: string) => ({
       get: (url: string) => agent.get(url).set('Authorization', `Bearer ${token}`),
@@ -72,7 +74,7 @@ afterAll(async () => {
       patch: (url: string) => agent.patch(url).set('Authorization', `Bearer ${token}`),
       delete: (url: string) => agent.delete(url).set('Authorization', `Bearer ${token}`),
     }),
-    
+
     // API key helpers
     withApiKey: (apiKey: string) => ({
       get: (url: string) => agent.get(url).set('X-API-Key', apiKey),
@@ -86,7 +88,8 @@ afterAll(async () => {
 
 // Test data factories for E2E
 (global as any).createE2ETestUser = async (app: INestApplication) => {
-  const response = await (global as any).makeRequest(app)
+  const response = await (global as any)
+    .makeRequest(app)
     .post('/auth/register')
     .send({
       email: 'e2e-test@example.com',
@@ -100,16 +103,14 @@ afterAll(async () => {
 };
 
 (global as any).loginE2ETestUser = async (app: INestApplication, email: string, password: string) => {
-  const response = await (global as any).makeRequest(app)
-    .post('/auth/login')
-    .send({ email, password })
-    .expect(200);
+  const response = await (global as any).makeRequest(app).post('/auth/login').send({ email, password }).expect(200);
 
   return response.body.access_token;
 };
 
 (global as any).createE2ETestProperty = async (app: INestApplication, token: string) => {
-  const response = await (global as any).makeRequest(app)
+  const response = await (global as any)
+    .makeRequest(app)
     .withAuth(token)
     .post('/properties')
     .send({
@@ -140,31 +141,30 @@ afterAll(async () => {
 (global as any).testUserFlow = async (app: INestApplication) => {
   // 1. Register user
   const user = await (global as any).createE2ETestUser(app);
-  
+
   // 2. Login user
   const token = await (global as any).loginE2ETestUser(app, 'e2e-test@example.com', 'TestPassword123!');
-  
+
   // 3. Create property
   const property = await (global as any).createE2ETestProperty(app, token);
-  
+
   // 4. Get property
-  const retrievedProperty = await (global as any).makeRequest(app)
+  const retrievedProperty = await (global as any)
+    .makeRequest(app)
     .withAuth(token)
     .get(`/properties/${property.id}`)
     .expect(200);
-  
+
   // 5. Update property
-  const updatedProperty = await (global as any).makeRequest(app)
+  const updatedProperty = await (global as any)
+    .makeRequest(app)
     .withAuth(token)
     .patch(`/properties/${property.id}`)
     .send({ status: 'PENDING' })
     .expect(200);
-  
+
   // 6. Delete property
-  await (global as any).makeRequest(app)
-    .withAuth(token)
-    .delete(`/properties/${property.id}`)
-    .expect(200);
-  
+  await (global as any).makeRequest(app).withAuth(token).delete(`/properties/${property.id}`).expect(200);
+
   return { user, token, property };
 };
