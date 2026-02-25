@@ -25,6 +25,23 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
+  // Advanced profile fields
+  bio           String?
+  location      String?
+  avatarUrl     String?   @map("avatar_url")
+
+  // Preferences and privacy
+  preferences   Json?
+  privacySettings Json?   @map("privacy_settings")
+  exportRequestedAt DateTime? @map("export_requested_at")
+
+  // Relationships
+  followers     UserRelationship[] @relation("Followers")
+  following     UserRelationship[] @relation("Following")
+
+  // Activity
+  activities    UserActivity[]
+
   properties           Property[]
   receivedTransactions Transaction[] @relation("UserTransactions")
   userRole             Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
@@ -36,9 +53,41 @@ model User {
   @@index([walletAddress]) // For searching users by wallet address
   @@index([role]) // For filtering users by role
   @@index([createdAt]) // For sorting/filtering by creation date
-  // Consider adding an index on isVerified if you often filter by verification status
   @@index([isVerified])
+  @@index([location])
   @@map("users")
+// User activity tracking
+model UserActivity {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("user_activities")
+}
+
+// User relationship (followers, connections)
+model UserRelationship {
+  id           String   @id @default(cuid())
+  followerId   String   @map("follower_id")
+  followingId  String   @map("following_id")
+  status       String   @default("active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  follower     User     @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following    User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("user_relationships")
+}
 }
 
 model Property {

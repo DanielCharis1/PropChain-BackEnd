@@ -76,4 +76,48 @@ export class CreateUserDto {
   @IsXssSafe({ message: 'Wallet address contains potentially malicious content' })
   @IsNotSqlInjection({ message: 'Wallet address contains potential SQL injection' })
   walletAddress?: string;
+
+  @ApiPropertyOptional({
+    description: 'User biography',
+    example: 'Blockchain enthusiast and property investor.',
+    maxLength: 500,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  bio?: string;
+
+  @ApiPropertyOptional({
+    description: 'User location',
+    example: 'London, UK',
+    maxLength: 100,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  location?: string;
+
+  @ApiPropertyOptional({
+    description: 'Avatar image URL',
+    example: 'https://example.com/avatar.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'User preferences (JSON object)',
+    example: '{ "theme": "dark", "notifications": true }',
+    type: Object,
+  })
+  @IsOptional()
+  preferences?: any;
+
+  @ApiPropertyOptional({
+    description: 'User privacy settings (JSON object)',
+    example: '{ "profileVisible": true }',
+    type: Object,
+  })
+  @IsOptional()
+  privacySettings?: any;
 }

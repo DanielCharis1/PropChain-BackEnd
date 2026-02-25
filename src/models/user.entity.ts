@@ -19,10 +19,46 @@ export class User implements PrismaUser {
 
   createdAt: Date;
   updatedAt: Date;
+
+  // Advanced profile fields
+  bio?: string | null;
+  location?: string | null;
+  avatarUrl?: string | null;
+
+  // Preferences and privacy
+  preferences?: any | null;
+  privacySettings?: any | null;
+  exportRequestedAt?: Date | null;
+
+  // Relationships
+  followers?: UserRelationship[];
+  following?: UserRelationship[];
+
+  // Activity
+  activities?: UserActivity[];
 }
 
 /**
  * Input used when creating a user
+// User activity entity
+export class UserActivity {
+  id: string;
+  userId: string;
+  action: string;
+  metadata?: any;
+  createdAt: Date;
+}
+
+// User relationship entity
+export class UserRelationship {
+  id: string;
+  followerId: string;
+  followingId: string;
+  status: string;
+  createdAt: Date;
+  follower?: User;
+  following?: User;
+}
  * Flexible enough for email/password and Web3 users
  */
 export type CreateUserInput = {

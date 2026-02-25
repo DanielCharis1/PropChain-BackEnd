@@ -31,6 +31,62 @@ export class UserResponseDto {
   })
   walletAddress?: string;
 
+  @ApiPropertyOptional({
+    description: 'User biography',
+    example: 'Blockchain enthusiast and property investor.',
+  })
+  bio?: string;
+
+  @ApiPropertyOptional({
+    description: 'User location',
+    example: 'London, UK',
+  })
+  location?: string;
+
+  @ApiPropertyOptional({
+    description: 'Avatar image URL',
+    example: 'https://example.com/avatar.jpg',
+  })
+  avatarUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'User preferences (JSON object)',
+    example: '{ "theme": "dark", "notifications": true }',
+    type: Object,
+  })
+  preferences?: any;
+
+  @ApiPropertyOptional({
+    description: 'User privacy settings (JSON object)',
+    example: '{ "profileVisible": true }',
+    type: Object,
+  })
+  privacySettings?: any;
+
+  @ApiPropertyOptional({
+    description: 'Followers count',
+    example: 10,
+  })
+  followersCount?: number;
+
+  @ApiPropertyOptional({
+    description: 'Following count',
+    example: 5,
+  })
+  followingCount?: number;
+
+  @ApiPropertyOptional({
+    description: 'User activity count',
+    example: 100,
+  })
+  activityCount?: number;
+
+  @ApiPropertyOptional({
+    description: 'User login count',
+    example: 20,
+  })
+  loginCount?: number;
+
   @ApiProperty({
     description: 'Whether the user email is verified',
     example: true,

@@ -283,4 +283,149 @@ export class UserService {
       data,
     });
   }
+  /**
+   * Update user profile (bio, location, avatar)
+   */
+  async updateProfile(userId: string, profile: { bio?: string; location?: string; avatarUrl?: string }) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: profile,
+    });
+  }
+
+  /**
+   * Update user preferences (JSON)
+   */
+  async updatePreferences(userId: string, preferences: any) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { preferences },
+    });
+  }
+
+  /**
+   * Track user activity
+   */
+  async logActivity(userId: string, action: string, metadata?: any) {
+    return this.prisma.userActivity.create({
+      data: { userId, action, metadata },
+    });
+  }
+
+  /**
+   * Get user activity history
+   */
+  async getActivityHistory(userId: string, limit = 50) {
+    return this.prisma.userActivity.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+  }
+
+  /**
+   * Update user avatar
+   */
+  async updateAvatar(userId: string, avatarUrl: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { avatarUrl },
+    });
+  }
+
+  /**
+   * Search users by name, email, or location
+   */
+  async searchUsers(query: string, limit = 20) {
+    return this.prisma.user.findMany({
+      where: {
+        OR: [
+          { email: { contains: query, mode: 'insensitive' } },
+          { firstName: { contains: query, mode: 'insensitive' } },
+          { lastName: { contains: query, mode: 'insensitive' } },
+          { location: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      take: limit,
+    });
+  }
+
+  /**
+   * Follow another user
+   */
+  async followUser(followerId: string, followingId: string) {
+    if (followerId === followingId) throw new BadRequestException('Cannot follow yourself');
+    // Prevent duplicate follows
+    const existing = await this.prisma.userRelationship.findUnique({
+      where: { followerId_followingId: { followerId, followingId } },
+    });
+    if (existing) return existing;
+    return this.prisma.userRelationship.create({
+      data: { followerId, followingId },
+    });
+  }
+
+  /**
+   * Unfollow a user
+   */
+  async unfollowUser(followerId: string, followingId: string) {
+    return this.prisma.userRelationship.delete({
+      where: { followerId_followingId: { followerId, followingId } },
+    });
+  }
+
+  /**
+   * List followers of a user
+   */
+  async getFollowers(userId: string, limit = 50) {
+    return this.prisma.userRelationship.findMany({
+      where: { followingId: userId },
+      take: limit,
+      include: { follower: true },
+    });
+  }
+
+  /**
+   * List users a user is following
+   */
+  async getFollowing(userId: string, limit = 50) {
+    return this.prisma.userRelationship.findMany({
+      where: { followerId: userId },
+      take: limit,
+      include: { following: true },
+    });
+  }
+
+  /**
+   * Get user analytics (basic engagement metrics)
+   */
+  async getUserAnalytics(userId: string) {
+    const [loginCount, activityCount, followers, following] = await Promise.all([
+      this.prisma.userActivity.count({ where: { userId, action: 'login' } }),
+      this.prisma.userActivity.count({ where: { userId } }),
+      this.prisma.userRelationship.count({ where: { followingId: userId } }),
+      this.prisma.userRelationship.count({ where: { followerId: userId } }),
+    ]);
+    return { loginCount, activityCount, followers, following };
+  }
+
+  /**
+   * Update privacy settings
+   */
+  async updatePrivacySettings(userId: string, privacySettings: any) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { privacySettings },
+    });
+  }
+
+  /**
+   * Request user data export
+   */
+  async requestDataExport(userId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { exportRequestedAt: new Date() },
+    });
+  }
 }
