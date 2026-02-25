@@ -3,26 +3,34 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+import { ApiResponse, ApiTags, ApiOperation, ApiBody, ApiParam, ApiExtraModels, ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiConflictResponse, ApiCreatedResponse, ApiBearerAuth, ApiDeprecated, ApiQuery, ApiConsumes, ApiProduces, ApiProperty, ApiPropertyOptional, ApiResponseOptions, ApiVersion } from '@nestjs/swagger';
+import { UserResponseDto } from './dto/user-response.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
 @ApiTags('users')
-@Controller('users')
+@Controller({ path: 'users', version: '1' })
+@ApiExtraModels(UserResponseDto)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'User created successfully.' })
-  @ApiResponse({ status: 409, description: 'User already exists.' })
+  @ApiOperation({ summary: 'Create a new user', description: 'Register a new user with email, password, and optional profile fields.' })
+  @ApiCreatedResponse({ description: 'User created successfully.', type: UserResponseDto, examples: { success: { value: { id: 'user_abc123', email: 'john.doe@example.com', firstName: 'John', lastName: 'Doe', isEmailVerified: false } } } })
+  @ApiConflictResponse({ description: 'User already exists.' })
+  @ApiBadRequestResponse({ description: 'Validation failed.' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID' })
-  @ApiResponse({ status: 200, description: 'User retrieved successfully.' })
-  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiOperation({ summary: 'Get user by ID', description: 'Retrieve a user by their unique identifier.' })
+  @ApiOkResponse({ description: 'User retrieved successfully.', type: UserResponseDto })
+  @ApiNotFoundResponse({ description: 'User not found.' })
   findOne(@Param('id') id: string) {
     return this.userService.findById(id);
   }
+  // Add @ApiVersion('1') to all endpoints for explicit versioning
+  // ...existing code for advanced features...
 
   // --- Advanced Features ---
 
