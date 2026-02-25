@@ -1,22 +1,27 @@
 # Property Valuation API Documentation
 
 ## Overview
+
 The Property Valuation API provides automated property value estimates based on market data, location, and property features. It integrates with external ML services and valuation APIs to provide accurate property valuations.
 
 ## Endpoints
 
 ### Get Property Valuation
+
 ```
 POST /valuation/:propertyId
 ```
 
 #### Description
+
 Gets a property valuation based on its features and external market data.
 
 #### Parameters
+
 - `propertyId` (path): The ID of the property to value
 
 #### Request Body
+
 ```json
 {
   "location": "123 Main St, City, State",
@@ -30,6 +35,7 @@ Gets a property valuation based on its features and external market data.
 ```
 
 #### Response
+
 ```json
 {
   "propertyId": "property-id-string",
@@ -63,17 +69,21 @@ Gets a property valuation based on its features and external market data.
 ```
 
 ### Get Property Valuation History
+
 ```
 GET /valuation/:propertyId/history
 ```
 
 #### Description
+
 Retrieves the historical valuations for a specific property.
 
 #### Parameters
+
 - `propertyId` (path): The ID of the property
 
 #### Response
+
 ```json
 [
   {
@@ -96,17 +106,21 @@ Retrieves the historical valuations for a specific property.
 ```
 
 ### Get Market Trend Analysis
+
 ```
 GET /valuation/trends/:location
 ```
 
 #### Description
+
 Retrieves market trend analysis for a specific location.
 
 #### Parameters
+
 - `location` (path): The location to analyze
 
 #### Response
+
 ```json
 {
   "location": "New York, NY",
@@ -125,28 +139,35 @@ Retrieves market trend analysis for a specific location.
 ```
 
 ### Get Latest Valuation
+
 ```
 GET /valuation/:propertyId/latest
 ```
 
 #### Description
+
 Retrieves the most recent valuation for a property.
 
 #### Parameters
+
 - `propertyId` (path): The ID of the property
 
 #### Response
+
 Same as Get Property Valuation endpoint.
 
 ### Batch Valuations
+
 ```
 POST /valuation/batch
 ```
 
 #### Description
+
 Get valuations for multiple properties in a single request.
 
 #### Request Body
+
 ```json
 {
   "properties": [
@@ -173,6 +194,7 @@ Get valuations for multiple properties in a single request.
 ```
 
 #### Response
+
 ```json
 [
   {
@@ -198,24 +220,31 @@ Get valuations for multiple properties in a single request.
 ## Features
 
 ### Integration with External APIs
+
 - Zillow API for property valuations
 - Redfin API for comparative market analysis
 - CoreLogic API for comprehensive property data
 
 ### Valuation Confidence Scoring
+
 The API provides confidence scores for each valuation, indicating the reliability of the estimate based on data quality and availability.
 
 ### Historical Tracking
+
 All valuations are stored with timestamps, allowing for trend analysis and comparison over time.
 
 ### Market Trend Analysis
+
 The API analyzes market trends in specific locations to provide context for individual property valuations.
 
 ### Caching Strategy
+
 Valuation results are cached to reduce API calls to external services and improve response times.
 
 ### Error Handling
+
 Comprehensive error handling for API failures, with fallback mechanisms and graceful degradation.
 
 ### Rate Limiting
+
 Built-in rate limiting to prevent abuse of external valuation APIs.

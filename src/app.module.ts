@@ -45,6 +45,7 @@ import { AuditController } from './common/controllers/audit.controller';
 
 // Middleware
 import { AuthRateLimitMiddleware } from './auth/middleware/auth.middleware';
+import { ObservabilityModule } from './observability/observability.module';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { AuthRateLimitMiddleware } from './auth/middleware/auth.middleware';
     // Compliance & Security
     AuditModule,
     RbacModule,
+    ObservabilityModule,
   ],
   controllers: [
     AuditController, // Add the audit controller

@@ -21,6 +21,7 @@ ENCRYPTION_KEY=your-secure-32-character-encryption-key-here-minimum
 ```
 
 **Generate a secure key:**
+
 ```bash
 # Option 1: Using Node.js
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -72,6 +73,7 @@ npm run start:dev
 Once the server is running:
 
 1. **Register/Login** to get a JWT token:
+
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
@@ -79,6 +81,7 @@ curl -X POST http://localhost:3000/auth/login \
 ```
 
 2. **Create an API key**:
+
 ```bash
 curl -X POST http://localhost:3000/api-keys \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -136,17 +139,18 @@ See `src/api-keys/examples/properties-with-api-keys.example.ts` for detailed exa
 To add new scopes for your specific use case:
 
 1. Define scope constants (optional but recommended):
+
 ```typescript
 // src/api-keys/constants/scopes.ts
 export const API_KEY_SCOPES = {
   // Properties
   READ_PROPERTIES: 'read:properties',
   WRITE_PROPERTIES: 'write:properties',
-  
+
   // Transactions
   READ_TRANSACTIONS: 'read:transactions',
   WRITE_TRANSACTIONS: 'write:transactions',
-  
+
   // Add your custom scopes here
   READ_ANALYTICS: 'read:analytics',
   ADMIN_ACCESS: 'admin:all',
@@ -154,6 +158,7 @@ export const API_KEY_SCOPES = {
 ```
 
 2. Use the scopes in your controllers:
+
 ```typescript
 @ApiKeyScopes(API_KEY_SCOPES.READ_ANALYTICS)
 ```
@@ -192,6 +197,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ```
 
 Check the response for:
+
 - `requestCount` - Total requests made
 - `lastUsedAt` - Last time the key was used
 - `isActive` - Whether the key is still active
@@ -201,6 +207,7 @@ Check the response for:
 ### Migration Issues
 
 If migration fails:
+
 ```bash
 # Reset database (⚠️ WARNING: This deletes all data)
 npx prisma migrate reset
@@ -214,6 +221,7 @@ npx prisma migrate dev
 ### Encryption Errors
 
 If you see "ENCRYPTION_KEY must be at least 32 characters":
+
 ```bash
 # Verify your .env file has the key
 cat .env | grep ENCRYPTION_KEY
@@ -225,6 +233,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ### Rate Limiting Issues
 
 If requests are being rate limited unexpectedly:
+
 - Current implementation is simple (checks lastUsedAt within 1 minute)
 - For production, consider implementing Redis-based rate limiting
 - See `RedisService` for integration

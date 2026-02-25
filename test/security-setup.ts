@@ -4,7 +4,7 @@ import * as path from 'path';
 // Security test setup
 beforeAll(async () => {
   console.log('Setting up security test environment...');
-  
+
   // Set security-specific environment
   process.env.NODE_ENV = 'security';
   process.env.LOG_LEVEL = 'error'; // Reduce noise during security tests
@@ -18,7 +18,7 @@ afterAll(async () => {
 global.assertSecurityHeaders = (response: any, expectedHeaders: Record<string, string>) => {
   const headers = response.headers;
   const missingHeaders = [];
-  
+
   for (const [header, expectedValue] of Object.entries(expectedHeaders)) {
     const actualValue = headers[header.toLowerCase()];
     if (!actualValue) {
@@ -27,31 +27,24 @@ global.assertSecurityHeaders = (response: any, expectedHeaders: Record<string, s
       missingHeaders.push(`${header} (expected: ${expectedValue}, got: ${actualValue})`);
     }
   }
-  
+
   if (missingHeaders.length > 0) {
     throw new Error(`Missing or incorrect security headers: ${missingHeaders.join(', ')}`);
   }
 };
 
 global.assertNoSensitiveData = (response: any) => {
-  const sensitivePatterns = [
-    /password/i,
-    /secret/i,
-    /token/i,
-    /key/i,
-    /credential/i,
-    /auth/i,
-  ];
-  
+  const sensitivePatterns = [/password/i, /secret/i, /token/i, /key/i, /credential/i, /auth/i];
+
   const responseBody = JSON.stringify(response.body);
   const violations = [];
-  
+
   for (const pattern of sensitivePatterns) {
     if (pattern.test(responseBody)) {
       violations.push(pattern.source);
     }
   }
-  
+
   if (violations.length > 0) {
     throw new Error(`Sensitive data exposed in response: ${violations.join(', ')}`);
   }
@@ -60,7 +53,7 @@ global.assertNoSensitiveData = (response: any) => {
 global.assertRateLimiting = async (makeRequest: () => Promise<any>, limit: number, windowMs: number) => {
   const requests = [];
   const startTime = Date.now();
-  
+
   // Make requests rapidly
   for (let i = 0; i < limit + 5; i++) {
     try {
@@ -78,26 +71,26 @@ global.assertRateLimiting = async (makeRequest: () => Promise<any>, limit: numbe
       });
     }
   }
-  
+
   const successful = requests.filter(r => r.success);
   const rateLimited = requests.filter(r => r.status === 429);
-  
+
   if (rateLimited.length === 0) {
     throw new Error('No rate limiting detected - expected 429 responses');
   }
-  
+
   if (successful.length > limit) {
     throw new Error(`Rate limiting not enforced - ${successful.length} successful requests (limit: ${limit})`);
   }
-  
+
   console.log(`Rate limiting test passed: ${successful.length} successful, ${rateLimited.length} rate limited`);
-  
+
   return { successful, rateLimited, requests };
 };
 
 global.assertInputValidation = async (makeRequest: (payload: any) => Promise<any>, invalidPayloads: any[]) => {
   const violations = [];
-  
+
   for (const payload of invalidPayloads) {
     try {
       const response = await makeRequest(payload);
@@ -117,11 +110,13 @@ global.assertInputValidation = async (makeRequest: (payload: any) => Promise<any
       }
     }
   }
-  
+
   if (violations.length > 0) {
-    throw new Error(`Input validation failed:\n${violations.map(v => `- Payload: ${JSON.stringify(v.payload)} - ${v.error}`).join('\n')}`);
+    throw new Error(
+      `Input validation failed:\n${violations.map(v => `- Payload: ${JSON.stringify(v.payload)} - ${v.error}`).join('\n')}`,
+    );
   }
-  
+
   console.log(`Input validation passed: ${invalidPayloads.length} invalid payloads rejected`);
 };
 
@@ -137,7 +132,7 @@ global.assertAuthenticationRequired = async (makeRequest: () => Promise<any>) =>
       throw new Error(`Expected 401 Unauthorized but got ${status}`);
     }
   }
-  
+
   console.log('Authentication requirement verified');
 };
 
@@ -153,7 +148,7 @@ global.assertAuthorizationRequired = async (makeRequest: () => Promise<any>) => 
       throw new Error(`Expected 403 Forbidden but got ${status}`);
     }
   }
-  
+
   console.log('Authorization requirement verified');
 };
 
@@ -169,25 +164,17 @@ global.assertSqlInjectionSafe = async (makeRequest: (input: string) => Promise<a
     "admin' /*",
     "' OR 'x'='x",
   ];
-  
+
   const violations = [];
-  
+
   for (const payload of sqlInjectionPayloads) {
     try {
       const response = await makeRequest(payload);
-      
+
       // Check if response contains database error messages
       const responseBody = JSON.stringify(response.body);
-      const dbErrorPatterns = [
-        /sql/i,
-        /mysql/i,
-        /postgresql/i,
-        /sqlite/i,
-        /ora-/i,
-        /syntax error/i,
-        /unclosed/i,
-      ];
-      
+      const dbErrorPatterns = [/sql/i, /mysql/i, /postgresql/i, /sqlite/i, /ora-/i, /syntax error/i, /unclosed/i];
+
       for (const pattern of dbErrorPatterns) {
         if (pattern.test(responseBody)) {
           violations.push({
@@ -196,7 +183,7 @@ global.assertSqlInjectionSafe = async (makeRequest: (input: string) => Promise<a
           });
         }
       }
-      
+
       // Check if response indicates successful injection (e.g., unexpected data returned)
       if (response.status === 200 && response.body && typeof response.body === 'object') {
         // Look for signs of successful injection
@@ -214,11 +201,13 @@ global.assertSqlInjectionSafe = async (makeRequest: (input: string) => Promise<a
       }
     }
   }
-  
+
   if (violations.length > 0) {
-    throw new Error(`SQL Injection vulnerabilities detected:\n${violations.map(v => `- Payload: "${v.payload}" - ${v.error}`).join('\n')}`);
+    throw new Error(
+      `SQL Injection vulnerabilities detected:\n${violations.map(v => `- Payload: "${v.payload}" - ${v.error}`).join('\n')}`,
+    );
   }
-  
+
   console.log(`SQL injection safety verified: ${sqlInjectionPayloads.length} payloads tested`);
 };
 
@@ -238,14 +227,14 @@ global.assertXssSafe = async (makeRequest: (input: string) => Promise<any>) => {
     '<video><source onerror="alert(\'xss\')">',
     '<audio src="x" onerror="alert(\'xss\')">',
   ];
-  
+
   const violations = [];
-  
+
   for (const payload of xssPayloads) {
     try {
       const response = await makeRequest(payload);
       const responseBody = JSON.stringify(response.body);
-      
+
       // Check if XSS payload is reflected in response
       if (responseBody.includes(payload)) {
         violations.push({
@@ -253,7 +242,7 @@ global.assertXssSafe = async (makeRequest: (input: string) => Promise<any>) => {
           error: 'XSS payload reflected in response',
         });
       }
-      
+
       // Check for HTML tags in response
       if (/<[^>]*>/.test(responseBody)) {
         violations.push({
@@ -268,10 +257,12 @@ global.assertXssSafe = async (makeRequest: (input: string) => Promise<any>) => {
       }
     }
   }
-  
+
   if (violations.length > 0) {
-    throw new Error(`XSS vulnerabilities detected:\n${violations.map(v => `- Payload: "${v.payload}" - ${v.error}`).join('\n')}`);
+    throw new Error(
+      `XSS vulnerabilities detected:\n${violations.map(v => `- Payload: "${v.payload}" - ${v.error}`).join('\n')}`,
+    );
   }
-  
+
   console.log(`XSS safety verified: ${xssPayloads.length} payloads tested`);
 };

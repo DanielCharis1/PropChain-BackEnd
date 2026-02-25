@@ -8,7 +8,7 @@ beforeAll(async () => {
   process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/propchain_test';
   process.env.JWT_SECRET = 'test-jwt-secret';
   process.env.REDIS_URL = 'redis://localhost:6379/1';
-  
+
   // Mock console methods to reduce noise in tests
   jest.spyOn(console, 'log').mockImplementation(() => {});
   jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -30,20 +30,22 @@ jest.setTimeout(30000);
       ConfigModule.forRoot({
         isGlobal: true,
         ignoreEnvFile: true,
-        load: [() => ({
-          NODE_ENV: 'test',
-          DATABASE_URL: 'postgresql://test:test@localhost:5432/propchain_test',
-          JWT_SECRET: 'test-jwt-secret-that-is-at-least-32-characters-long',
-          JWT_REFRESH_SECRET: 'test-jwt-refresh-secret-that-is-long-enough',
-          JWT_EXPIRES_IN: '1h',
-          REDIS_URL: 'redis://localhost:6379/1',
-          S3_BUCKET: 'test-bucket',
-          S3_REGION: 'us-east-1',
-          ENCRYPTION_KEY: 'test-encryption-key-32-chars-long-1234567890',
-          RPC_URL: 'http://localhost:8545',
-          PRIVATE_KEY: 'test-private-key-that-is-long-enough-for-testing',
-          SESSION_SECRET: 'test-session-secret-32-chars-long-1234567890',
-        })],
+        load: [
+          () => ({
+            NODE_ENV: 'test',
+            DATABASE_URL: 'postgresql://test:test@localhost:5432/propchain_test',
+            JWT_SECRET: 'test-jwt-secret-that-is-at-least-32-characters-long',
+            JWT_REFRESH_SECRET: 'test-jwt-refresh-secret-that-is-long-enough',
+            JWT_EXPIRES_IN: '1h',
+            REDIS_URL: 'redis://localhost:6379/1',
+            S3_BUCKET: 'test-bucket',
+            S3_REGION: 'us-east-1',
+            ENCRYPTION_KEY: 'test-encryption-key-32-chars-long-1234567890',
+            RPC_URL: 'http://localhost:8545',
+            PRIVATE_KEY: 'test-private-key-that-is-long-enough-for-testing',
+            SESSION_SECRET: 'test-session-secret-32-chars-long-1234567890',
+          }),
+        ],
       }),
       ...imports,
     ],
@@ -82,7 +84,7 @@ jest.setTimeout(30000);
     zipCode: '12345',
     country: 'Test Country',
     latitude: 40.7128,
-    longitude: -74.0060,
+    longitude: -74.006,
   },
   userId: 'user-123',
   createdAt: new Date(),

@@ -439,7 +439,6 @@ export class PropertiesService {
       if (updatePropertyDto.address) {
         updateData.location = this.formatAddress(updatePropertyDto.address);
       }
-      }
 
       if (updatePropertyDto.status !== undefined) {
         updateData.status = this.mapPropertyStatus(updatePropertyDto.status);

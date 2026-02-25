@@ -305,21 +305,13 @@ export class AuthService {
   }
 
   private generateTokens(user: any) {
-eat-remove-todo-comments
-    const jti = uuidv4(); // JWT ID for blacklisting
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      jti,
-
     // === UNIQUE JWT ID (JTI) ===
     // Enables per-token blacklisting even if JWT signature is still valid
     const jti = uuidv4();
-    const payload = { 
+    const payload = {
       sub: user.id,      // Subject (user ID)
       email: user.email,
-      jti: jti           // JWT ID for blacklisting
-
+      jti,               // JWT ID for blacklisting
     };
 
     const accessToken = this.jwtService.sign(payload, {

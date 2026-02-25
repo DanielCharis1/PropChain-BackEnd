@@ -19,25 +19,22 @@ export class TransactionsService {
     };
   }
 
-  private validateTransition(
-  current: TransactionStatus,
-  next: TransactionStatus,
-) {
-  const allowedTransitions = {
-    PENDING: ['ESCROW_FUNDED', 'CANCELLED'],
-    ESCROW_FUNDED: ['BLOCKCHAIN_SUBMITTED'],
-    BLOCKCHAIN_SUBMITTED: ['CONFIRMING'],
-    CONFIRMING: ['CONFIRMED', 'FAILED'],
-    CONFIRMED: ['COMPLETED'],
-  };
+  private validateTransition(current: TransactionStatus, next: TransactionStatus) {
+    const allowedTransitions = {
+      PENDING: ['ESCROW_FUNDED', 'CANCELLED'],
+      ESCROW_FUNDED: ['BLOCKCHAIN_SUBMITTED'],
+      BLOCKCHAIN_SUBMITTED: ['CONFIRMING'],
+      CONFIRMING: ['CONFIRMED', 'FAILED'],
+      CONFIRMED: ['COMPLETED'],
+    };
 
-  if (!allowedTransitions[current]?.includes(next)) {
-    throw new BusinessException(
-      ERROR_CODES.INVALID_TRANSACTION_STATE,
-      `Invalid transition from ${current} to ${next}`,
-    );
+    if (!allowedTransitions[current]?.includes(next)) {
+      throw new BusinessException(
+        ERROR_CODES.INVALID_TRANSACTION_STATE,
+        `Invalid transition from ${current} to ${next}`,
+      );
+    }
   }
-}
   async createTransaction(dto: CreateTransactionDto) {
     const fees = this.calculateFees(dto.amount);
 
@@ -52,38 +49,38 @@ export class TransactionsService {
   }
 
   async fundEscrow(transactionId: string) {
-  const tx = await this.getTransaction(transactionId);
+    const tx = await this.getTransaction(transactionId);
 
-  const escrowWallet = await this.blockchainService.createEscrowWallet();
+    const escrowWallet = await this.blockchainService.createEscrowWallet();
 
-  await this.prisma.transaction.update({
-    where: { id: transactionId },
-    data: {
-      escrowWallet,
-      status: 'ESCROW_FUNDED',
-    },
-  });
-
-  return escrowWallet;
-}
-
-async monitorBlockchain(transactionId: string) {
-  const tx = await this.getTransaction(transactionId);
-
-  if (!tx.blockchainHash) return;
-
-  const receipt = await this.blockchainService.getTransactionReceipt(
-    tx.blockchainHash,
-  );
-
-  if (receipt.confirmations >= 6) {
     await this.prisma.transaction.update({
-      where: { id: tx.id },
+      where: { id: transactionId },
       data: {
-        confirmations: receipt.confirmations,
-        status: 'CONFIRMED',
+        escrowWallet,
+        status: 'ESCROW_FUNDED',
       },
     });
+
+    return escrowWallet;
   }
-}
+
+  async monitorBlockchain(transactionId: string) {
+    const tx = await this.getTransaction(transactionId);
+
+    if (!tx.blockchainHash) {
+      return;
+    }
+
+    const receipt = await this.blockchainService.getTransactionReceipt(tx.blockchainHash);
+
+    if (receipt.confirmations >= 6) {
+      await this.prisma.transaction.update({
+        where: { id: tx.id },
+        data: {
+          confirmations: receipt.confirmations,
+          status: 'CONFIRMED',
+        },
+      });
+    }
+  }
 }

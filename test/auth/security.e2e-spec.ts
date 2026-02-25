@@ -44,24 +44,20 @@ describe('Authentication Security (e2e)', () => {
   describe('Token Blacklisting', () => {
     it('should blacklist token on logout', async () => {
       // Register a test user
-      const registerResponse = await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          email: 'test@example.com',
-          password: 'SecurePass123!',
-          firstName: 'Test',
-          lastName: 'User',
-        });
+      const registerResponse = await request(app.getHttpServer()).post('/auth/register').send({
+        email: 'test@example.com',
+        password: 'SecurePass123!',
+        firstName: 'Test',
+        lastName: 'User',
+      });
 
       expect(registerResponse.status).toBe(201);
 
       // Login to get tokens
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: 'test@example.com',
-          password: 'SecurePass123!',
-        });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+        email: 'test@example.com',
+        password: 'SecurePass123!',
+      });
 
       expect(loginResponse.status).toBe(200);
       const { access_token } = loginResponse.body;
@@ -85,25 +81,21 @@ describe('Authentication Security (e2e)', () => {
   describe('Brute Force Protection', () => {
     it('should lock account after too many failed attempts', async () => {
       const email = 'brute-force@test.com';
-      
+
       // Register test user
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          email,
-          password: 'SecurePass123!',
-          firstName: 'Test',
-          lastName: 'User',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        email,
+        password: 'SecurePass123!',
+        firstName: 'Test',
+        lastName: 'User',
+      });
 
       // Make 6 failed login attempts
       for (let i = 0; i < 6; i++) {
-        const response = await request(app.getHttpServer())
-          .post('/auth/login')
-          .send({
-            email,
-            password: 'wrong-password',
-          });
+        const response = await request(app.getHttpServer()).post('/auth/login').send({
+          email,
+          password: 'wrong-password',
+        });
 
         if (i < 5) {
           expect(response.status).toBe(401);
@@ -115,12 +107,10 @@ describe('Authentication Security (e2e)', () => {
       }
 
       // Correct password should still fail when locked
-      const correctResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email,
-          password: 'SecurePass123!',
-        });
+      const correctResponse = await request(app.getHttpServer()).post('/auth/login').send({
+        email,
+        password: 'SecurePass123!',
+      });
 
       expect(correctResponse.status).toBe(401);
       expect(correctResponse.body.message).toContain('locked');
@@ -155,25 +145,19 @@ describe('Authentication Security (e2e)', () => {
     });
 
     it('should accept strong passwords', async () => {
-      const strongPasswords = [
-        'SecurePass123!',
-        'MyStr0ngP@ssw0rd',
-        'Complex123#Password',
-      ];
+      const strongPasswords = ['SecurePass123!', 'MyStr0ngP@ssw0rd', 'Complex123#Password'];
 
       for (const password of strongPasswords) {
         const email = `${Math.random()}@test.com`;
-        const response = await request(app.getHttpServer())
-          .post('/auth/register')
-          .send({
-            email,
-            password,
-            firstName: 'Test',
-            lastName: 'User',
-          });
+        const response = await request(app.getHttpServer()).post('/auth/register').send({
+          email,
+          password,
+          firstName: 'Test',
+          lastName: 'User',
+        });
 
         expect(response.status).toBe(201);
-        
+
         // Cleanup
         await prismaService.user.delete({ where: { email } });
       }
@@ -184,21 +168,17 @@ describe('Authentication Security (e2e)', () => {
     it('should manage active sessions', async () => {
       // Register and login
       const email = 'session@test.com';
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          email,
-          password: 'SecurePass123!',
-          firstName: 'Test',
-          lastName: 'User',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        email,
+        password: 'SecurePass123!',
+        firstName: 'Test',
+        lastName: 'User',
+      });
 
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email,
-          password: 'SecurePass123!',
-        });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+        email,
+        password: 'SecurePass123!',
+      });
 
       const { access_token } = loginResponse.body;
 

@@ -9,11 +9,6 @@
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/../src/$1"
   },
-  "collectCoverageFrom": [
-    "src/**/*.(t|j)s"
-  ],
-  "testPathIgnorePatterns": [
-    "/node_modules/",
-    "/dist/"
-  ]
+  "collectCoverageFrom": ["src/**/*.(t|j)s"],
+  "testPathIgnorePatterns": ["/node_modules/", "/dist/"]
 }

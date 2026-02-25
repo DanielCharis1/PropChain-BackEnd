@@ -53,12 +53,14 @@ GET /api-keys?page=2&limit=20&sortBy=name&sortOrder=asc
 ## Query Parameters
 
 ### page
+
 - **Type**: integer
 - **Default**: 1
 - **Min**: 1
 - **Description**: Page number (1-indexed)
 
 ### limit
+
 - **Type**: integer
 - **Default**: 10
 - **Min**: 1
@@ -66,11 +68,13 @@ GET /api-keys?page=2&limit=20&sortBy=name&sortOrder=asc
 - **Description**: Number of items per page
 
 ### sortBy
+
 - **Type**: string
 - **Default**: createdAt
 - **Description**: Field to sort by (must be a valid model field)
 
 ### sortOrder
+
 - **Type**: string (enum)
 - **Default**: desc
 - **Values**: `asc`, `desc`
@@ -79,27 +83,35 @@ GET /api-keys?page=2&limit=20&sortBy=name&sortOrder=asc
 ## Response Metadata
 
 ### total
+
 Total number of items matching the filter criteria
 
 ### page
+
 Current page number
 
 ### limit
+
 Items per page
 
 ### pages
+
 Total number of pages available
 
 ### hasNext
+
 Boolean indicating if there's a next page
 
 ### hasPrev
+
 Boolean indicating if there's a previous page
 
 ### sortBy
+
 Field currently sorted by
 
 ### sortOrder
+
 Current sort direction
 
 ## Implementation Guide
@@ -127,7 +139,7 @@ export class ItemService {
     // Get pagination options for Prisma
     const { skip, take, orderBy } = this.paginationService.getPrismaOptions(
       paginationQuery,
-      'createdAt' // default sort field
+      'createdAt', // default sort field
     );
 
     // Fetch data and count in parallel
@@ -155,9 +167,7 @@ export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
   @Get()
-  async findAll(
-    @Query() paginationQuery: PaginationQueryDto,
-  ): Promise<ItemDto[] | PaginatedResponseDto<ItemDto>> {
+  async findAll(@Query() paginationQuery: PaginationQueryDto): Promise<ItemDto[] | PaginatedResponseDto<ItemDto>> {
     return this.itemService.findAll(paginationQuery);
   }
 }
@@ -167,18 +177,20 @@ export class ItemController {
 
 The pagination system enforces these constraints automatically:
 
-| Parameter | Min | Max | Behavior |
-|-----------|-----|-----|----------|
-| page | 1 | ∞ | Below 1 defaults to 1 |
-| limit | 1 | 100 | Above 100 capped at 100 |
-| sortOrder | - | - | Must be 'asc' or 'desc' |
+| Parameter | Min | Max | Behavior                |
+| --------- | --- | --- | ----------------------- |
+| page      | 1   | ∞   | Below 1 defaults to 1   |
+| limit     | 1   | 100 | Above 100 capped at 100 |
+| sortOrder | -   | -   | Must be 'asc' or 'desc' |
 
 ## Sorting
 
 ### Default Sorting
+
 By default, results are sorted by `createdAt` in descending order (newest first).
 
 ### Custom Sort Fields
+
 ```bash
 # Sort by email ascending
 GET /api-keys?page=1&sortBy=email&sortOrder=asc
@@ -188,7 +200,9 @@ GET /api-keys?page=1&sortBy=updatedAt&sortOrder=desc
 ```
 
 ### Valid Sort Fields
+
 Each endpoint documents which fields can be sorted. Generally:
+
 - `createdAt`
 - `updatedAt`
 - `name`
@@ -198,17 +212,20 @@ Each endpoint documents which fields can be sorted. Generally:
 ## Performance Considerations
 
 ### Large Datasets
+
 - Use reasonable limits (10-50 items) for initial loads
 - Implement pagination in UI to avoid loading all items
 - Consider caching frequently accessed pages
 
 ### Database Impact
+
 ```
 Single query for count + data fetch = 2 database queries
 Use Promise.all() to execute in parallel
 ```
 
 ### Optimization Tips
+
 ```typescript
 // Good: Parallel execution
 const [items, total] = await Promise.all([
@@ -224,24 +241,31 @@ const total = await this.prisma.item.count(); // Extra query
 ## Testing
 
 ### Unit Tests
+
 Run pagination service tests:
+
 ```bash
 npm run test:unit -- test/pagination/pagination.service.spec.ts
 ```
 
 ### Integration Tests
+
 Run full endpoint tests:
+
 ```bash
 npm run test:integration -- test/pagination/pagination.integration.spec.ts
 ```
 
 ### Performance Benchmarks
+
 Run performance tests:
+
 ```bash
 ts-node test/pagination/pagination.performance.ts
 ```
 
 Expected performance:
+
 - ~100K operations/second for calculatePagination
 - ~100K operations/second for createMetadata
 - <1ms for formatResponse with typical data
@@ -249,22 +273,26 @@ Expected performance:
 ## Common Use Cases
 
 ### Get Recent Items (First Page)
+
 ```bash
 GET /api-keys?page=1&limit=10&sortBy=createdAt&sortOrder=desc
 ```
 
 ### Navigate to Last Page
+
 ```bash
 GET /api-keys?page=10&limit=10
 # Use meta.pages to determine last page
 ```
 
 ### Search and Paginate
+
 ```bash
 GET /api-keys?page=1&limit=20&sortBy=name&sortOrder=asc
 ```
 
 ### Iterate Through All Items
+
 ```typescript
 let page = 1;
 let hasMore = true;
@@ -272,10 +300,10 @@ let hasMore = true;
 while (hasMore) {
   const response = await fetch(`/api-keys?page=${page}&limit=50`);
   const { data, meta } = await response.json();
-  
+
   // Process data
   processItems(data);
-  
+
   hasMore = meta.hasNext;
   page++;
 }
@@ -304,11 +332,13 @@ GET /api-keys?sortOrder=unknown
 ### Updating Existing Endpoints
 
 1. **Add PaginationService to module providers**
+
 ```typescript
-providers: [ItemService, PaginationService]
+providers: [ItemService, PaginationService];
 ```
 
 2. **Update service method**
+
 ```typescript
 // Before
 async findAll(): Promise<ItemDto[]> {
@@ -329,6 +359,7 @@ async findAll(paginationQuery?: PaginationQueryDto) {
 ```
 
 3. **Update controller method**
+
 ```typescript
 // Before
 async findAll(): Promise<ItemDto[]> {
@@ -344,14 +375,18 @@ async findAll(@Query() paginationQuery: PaginationQueryDto) {
 ## API Compatibility
 
 ### Backward Compatibility
+
 Existing endpoints without pagination continue to work. Pagination is additive and optional on the service layer.
 
 ### Response Format Changes
+
 When pagination is enabled:
+
 - Response wraps data in `data` field
 - Adds `meta` object with pagination details
 
 ### Version Support
+
 - Works with NestJS 9+
 - Works with Prisma 4+
 - Compatible with TypeScript 4.5+
@@ -361,6 +396,7 @@ When pagination is enabled:
 1. **Always use pagination for list endpoints** - Even if starting with small datasets, plan for growth
 
 2. **Validate sortBy fields** - Maintain a whitelist of sortable fields
+
    ```typescript
    const SORTABLE_FIELDS = ['createdAt', 'name', 'email'];
    if (!SORTABLE_FIELDS.includes(sortBy)) {
@@ -379,24 +415,32 @@ When pagination is enabled:
 ## Troubleshooting
 
 ### Issue: "hasNext is always false"
+
 Check that you're using `meta.pages` and `meta.page` correctly:
+
 ```typescript
 const hasNext = page < pages; // Correct
 const hasNext = page <= pages; // Incorrect
 ```
 
 ### Issue: "Duplicates across pages"
+
 Ensure consistent sorting with `orderBy`:
+
 ```typescript
 // Good: Deterministic sorting
-orderBy: { createdAt: 'desc' } 
+orderBy: {
+  createdAt: 'desc';
+}
 
 // Risky: Multiple sort fields needed
-orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }]
+orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }];
 ```
 
 ### Issue: "Performance degradation with large limits"
+
 Remember the 100-item hard limit and pagination in UI:
+
 ```typescript
 // Always enforced
 limit = Math.min(limit, 100);

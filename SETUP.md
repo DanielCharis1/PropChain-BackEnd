@@ -8,7 +8,7 @@ Before you begin, ensure you have the following installed:
 
 - **Node.js** v18+ (LTS recommended)
 - **npm** or **yarn** package manager
-- **PostgreSQL** v14+ 
+- **PostgreSQL** v14+
 - **Redis** v6+
 - **Git** version control
 - **Docker** & **Docker Compose** (optional, for containerized setup)
@@ -43,6 +43,7 @@ nano .env
 ```
 
 **Required Environment Variables:**
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `JWT_SECRET` - Secret for JWT token signing
 - `ENCRYPTION_KEY` - 32-character encryption key
@@ -178,25 +179,30 @@ src/
 ## Environment Variables
 
 ### Application Configuration
+
 - `NODE_ENV` - Environment (development/staging/production)
 - `PORT` - Server port (default: 3000)
 - `API_PREFIX` - API route prefix (default: api)
 - `CORS_ORIGIN` - Allowed CORS origins
 
 ### Database
+
 - `DATABASE_URL` - PostgreSQL connection string
 
 ### Redis
+
 - `REDIS_HOST` - Redis server host
 - `REDIS_PORT` - Redis server port
 - `REDIS_PASSWORD` - Redis password (if required)
 
 ### Security
+
 - `JWT_SECRET` - JWT signing secret
 - `JWT_EXPIRES_IN` - JWT token expiration
 - `ENCRYPTION_KEY` - Data encryption key
 
 ### Blockchain
+
 - `BLOCKCHAIN_NETWORK` - Blockchain network (sepolia/mainnet)
 - `RPC_URL` - Blockchain RPC endpoint
 - `PRIVATE_KEY` - Private key for transactions (development only)
@@ -204,6 +210,7 @@ src/
 ## API Documentation
 
 Once the server is running, visit:
+
 - **Swagger UI**: `http://localhost:3000/api/docs`
 - **Health Check**: `http://localhost:3000/api/health`
 - **Configuration**: `http://localhost:3000/api/configuration`
@@ -213,6 +220,7 @@ Once the server is running, visit:
 ### Common Issues
 
 **Database Connection Error**
+
 ```bash
 # Check PostgreSQL status
 pg_ctl status
@@ -222,6 +230,7 @@ npm run db:reset
 ```
 
 **Redis Connection Error**
+
 ```bash
 # Check Redis status
 redis-cli ping
@@ -231,6 +240,7 @@ docker-compose restart redis
 ```
 
 **Module Not Found Errors**
+
 ```bash
 # Clear node modules and reinstall
 rm -rf node_modules package-lock.json
@@ -238,6 +248,7 @@ npm install
 ```
 
 **Port Already in Use**
+
 ```bash
 # Find process using port 3000
 lsof -ti:3000

@@ -5,6 +5,7 @@ This document describes the comprehensive security features implemented in the P
 ## Features Implemented
 
 ### 1. Advanced Rate Limiting
+
 - **Redis-based rate limiting** with sliding window algorithm
 - **Multiple rate limit tiers**: API, Auth, Expensive operations, User-based
 - **Customizable configurations** via environment variables
@@ -12,6 +13,7 @@ This document describes the comprehensive security features implemented in the P
 - **Fail-open design** to prevent service disruption
 
 ### 2. IP Blocking and Whitelisting
+
 - **Automatic IP blocking** after failed attempts
 - **Manual IP blocking/unblocking** via API
 - **IP whitelist** functionality
@@ -19,6 +21,7 @@ This document describes the comprehensive security features implemented in the P
 - **Real-time blocking checks** in middleware
 
 ### 3. DDoS Protection
+
 - **Traffic monitoring** and anomaly detection
 - **Automatic attack mitigation**
 - **Multiple mitigation strategies**: IP blocking, rate limiting, challenges
@@ -26,6 +29,7 @@ This document describes the comprehensive security features implemented in the P
 - **Configurable thresholds** and response actions
 
 ### 4. API Quota Management
+
 - **Plan-based quotas**: Free, Basic, Pro, Enterprise
 - **Daily and monthly usage tracking**
 - **Automatic quota reset** schedules
@@ -33,6 +37,7 @@ This document describes the comprehensive security features implemented in the P
 - **Quota enforcement** in API key validation
 
 ### 5. Security Headers
+
 - **Content Security Policy (CSP)** with customizable directives
 - **HTTP Strict Transport Security (HSTS)**
 - **X-Frame-Options**, **X-Content-Type-Options**, **X-XSS-Protection**
@@ -40,6 +45,7 @@ This document describes the comprehensive security features implemented in the P
 - **Environment-specific configurations**
 
 ### 6. Enhanced Authentication Security
+
 - **Enhanced API key guard** with quota and rate limit checking
 - **Comprehensive validation** including expiration and active status
 - **Usage tracking** and quota consumption
@@ -78,6 +84,7 @@ HSTS_PRELOAD=true
 ## API Endpoints
 
 ### Security Management
+
 - `GET /api/security/rate-limit/:key` - Get rate limit information
 - `DELETE /api/security/rate-limit/:key` - Reset rate limit
 - `GET /api/security/ip-blocks` - Get blocked IPs
@@ -100,6 +107,7 @@ HSTS_PRELOAD=true
 ## Usage Examples
 
 ### Rate Limiting Decorator
+
 ```typescript
 import { RateLimit } from '../security/decorators/rate-limit.decorator';
 import { AdvancedRateLimitGuard } from '../security/guards/advanced-rate-limit.guard';
@@ -107,12 +115,11 @@ import { AdvancedRateLimitGuard } from '../security/guards/advanced-rate-limit.g
 @Controller('api/expensive')
 @UseGuards(AdvancedRateLimitGuard)
 export class ExpensiveOperationsController {
-  
   @Post('operation')
   @RateLimit({
     windowMs: 60000, // 1 minute
     maxRequests: 10, // 10 requests per minute
-    keyPrefix: 'expensive_ops'
+    keyPrefix: 'expensive_ops',
   })
   async performExpensiveOperation() {
     // Your expensive operation here
@@ -121,13 +128,13 @@ export class ExpensiveOperationsController {
 ```
 
 ### Enhanced API Key Protection
+
 ```typescript
 import { EnhancedApiKeyGuard } from '../common/guards/api-key.guard';
 
 @Controller('api/protected')
 @UseGuards(EnhancedApiKeyGuard)
 export class ProtectedController {
-  
   @Get('data')
   async getData(@Request() req) {
     // req.apiKey contains quota and usage information
@@ -168,6 +175,7 @@ When rate limiting is applied, the following headers are included:
 ## Monitoring and Logging
 
 All security events are logged with appropriate severity levels:
+
 - **WARN**: Rate limit exceeded, IP blocked
 - **ERROR**: Security service failures
 - **INFO**: Security operations, configuration changes
@@ -175,6 +183,7 @@ All security events are logged with appropriate severity levels:
 ## Fail-Safe Design
 
 The security system is designed with fail-open principles:
+
 - If Redis is unavailable, rate limiting is bypassed
 - If security services fail, requests are allowed
 - Critical business operations continue during security service outages
@@ -182,6 +191,7 @@ The security system is designed with fail-open principles:
 ## Testing
 
 Comprehensive tests are included for all security features:
+
 - Unit tests for each service
 - Integration tests for combined functionality
 - Performance tests for high-load scenarios
@@ -190,6 +200,7 @@ Comprehensive tests are included for all security features:
 ## Future Enhancements
 
 Planned improvements:
+
 - Machine learning-based anomaly detection
 - Geographic IP blocking
 - Request fingerprinting

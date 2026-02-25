@@ -12,17 +12,17 @@ import { PasswordValidator } from '../common/validators/password.validator';
 
 /**
  * UserService
- * 
+ *
  * Handles user account management operations including:
  * - User registration with password hashing
  * - User lookup by email or wallet address
  * - Password updates with validation
  * - Email verification
  * - Profile management
- * 
+ *
  * All passwords are hashed using bcrypt with configurable salt rounds.
  * Ensures data integrity through unique constraint validation.
- * 
+ *
  * @class UserService
  * @injectable
  */
@@ -35,19 +35,19 @@ export class UserService {
 
   /**
    * Create a new user account
-   * 
+   *
    * Performs comprehensive validation:
    * - Password strength (minimum 8 chars, mixed case, numbers, special chars)
    * - Email and wallet address uniqueness
-   * 
+   *
    * Passwords are hashed using bcrypt with saltRounds from config (default: 12).
    * Default role is 'USER' - can be elevated by administrators.
-   * 
+   *
    * @param {CreateUserDto} createUserDto - User data (email, password, firstName, lastName, walletAddress)
    * @returns {Promise<User>} Created user object (password removed from response)
    * @throws {BadRequestException} If password doesn't meet strength requirements
    * @throws {ConflictException} If email or wallet already registered
-   * 
+   *
    * @example
    * ```typescript
    * const user = await userService.create({
@@ -108,10 +108,10 @@ export class UserService {
 
   /**
    * Find user by email address
-   * 
+   *
    * @param {string} email - Email address to search for
    * @returns {Promise<User>} User object if found, null otherwise
-   * 
+   *
    * @example
    * ```typescript
    * const user = await userService.findByEmail('user@example.com');
@@ -125,11 +125,11 @@ export class UserService {
 
   /**
    * Find user by ID
-   * 
+   *
    * @param {string} id - User ID to search for
    * @returns {Promise<User>} User object
    * @throws {NotFoundException} If user doesn't exist
-   * 
+   *
    * @example
    * ```typescript
    * const user = await userService.findById('clx123abc');
@@ -149,12 +149,12 @@ export class UserService {
 
   /**
    * Find user by blockchain wallet address
-   * 
+   *
    * Supports Web3 authentication without traditional email/password.
-   * 
+   *
    * @param {string} walletAddress - Blockchain wallet address (e.g., 0x...)
    * @returns {Promise<User>} User object if found, null otherwise
-   * 
+   *
    * @example
    * ```typescript
    * const user = await userService.findByWalletAddress('0x742d35Cc6634C0532925a3b844Bc59e4e7aa6cA6');
@@ -168,16 +168,16 @@ export class UserService {
 
   /**
    * Update user password with validation
-   * 
+   *
    * Validates new password strength before updating.
    * Uses bcrypt for secure hashing.
-   * 
+   *
    * @param {string} userId - ID of user whose password to update
    * @param {string} newPassword - New password (must pass strength validation)
    * @returns {Promise<User>} Updated user object
    * @throws {BadRequestException} If password doesn't meet strength requirements
    * @throws {NotFoundException} If user doesn't exist
-   * 
+   *
    * @example
    * ```typescript
    * await userService.updatePassword(userId, 'NewSecurePass123!');
@@ -204,14 +204,14 @@ export class UserService {
 
   /**
    * Mark user email as verified
-   * 
+   *
    * Called after successful email verification.
    * Sets isVerified flag to true.
-   * 
+   *
    * @param {string} userId - ID of user to verify
    * @returns {Promise<User>} Updated user object
    * @throws {NotFoundException} If user doesn't exist
-   * 
+   *
    * @example
    * ```typescript
    * await userService.verifyUser(userId);
@@ -227,10 +227,10 @@ export class UserService {
 
   /**
    * Update user profile information
-   * 
+   *
    * Supports partial updates for email, wallet address, and active status.
    * Validates uniqueness of new email and wallet address.
-   * 
+   *
    * @param {string} id - User ID to update
    * @param {Object} data - Data to update
    * @param {string} [data.email] - New email address
@@ -239,7 +239,7 @@ export class UserService {
    * @returns {Promise<User>} Updated user object
    * @throws {ConflictException} If email or wallet already taken by another user
    * @throws {NotFoundException} If user doesn't exist
-   * 
+   *
    * @example
    * ```typescript
    * await userService.updateUser(userId, {
@@ -354,12 +354,16 @@ export class UserService {
    * Follow another user
    */
   async followUser(followerId: string, followingId: string) {
-    if (followerId === followingId) throw new BadRequestException('Cannot follow yourself');
+    if (followerId === followingId) {
+      throw new BadRequestException('Cannot follow yourself');
+    }
     // Prevent duplicate follows
     const existing = await this.prisma.userRelationship.findUnique({
       where: { followerId_followingId: { followerId, followingId } },
     });
-    if (existing) return existing;
+    if (existing) {
+      return existing;
+    }
     return this.prisma.userRelationship.create({
       data: { followerId, followingId },
     });

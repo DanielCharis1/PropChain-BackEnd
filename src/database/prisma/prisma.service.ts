@@ -1,4 +1,3 @@
-
 // PrismaService manages the PrismaClient lifecycle and database connection pooling.
 // Connection pooling is configured via the DATABASE_URL environment variable.
 // Example: postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeout=30

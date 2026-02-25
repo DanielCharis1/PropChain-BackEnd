@@ -5,9 +5,10 @@ import { ConfigModule } from '@nestjs/config';
 beforeAll(async () => {
   // Set integration test environment
   process.env.NODE_ENV = 'test';
-  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/propchain_integration';
+  process.env.DATABASE_URL =
+    process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/propchain_integration';
   process.env.REDIS_URL = process.env.TEST_REDIS_URL || 'redis://localhost:6379/2';
-  
+
   console.log('Setting up integration test environment...');
 });
 
@@ -18,14 +19,7 @@ afterAll(async () => {
 // Database cleanup utilities
 (global as any).cleanupDatabase = async (prisma: any) => {
   // Clean up in order to respect foreign key constraints
-  const tables = [
-    'transaction',
-    'document',
-    'property',
-    'api_key',
-    'user_session',
-    'user',
-  ];
+  const tables = ['transaction', 'document', 'property', 'api_key', 'user_session', 'user'];
 
   for (const table of tables) {
     try {
@@ -107,15 +101,17 @@ afterAll(async () => {
       ConfigModule.forRoot({
         isGlobal: true,
         ignoreEnvFile: true,
-        load: [() => ({
-          NODE_ENV: 'test',
-          DATABASE_URL: process.env.DATABASE_URL,
-          REDIS_URL: process.env.REDIS_URL,
-          JWT_SECRET: 'integration-test-jwt-secret',
-          JWT_EXPIRES_IN: '1h',
-          S3_BUCKET: 'integration-test-bucket',
-          S3_REGION: 'us-east-1',
-        })],
+        load: [
+          () => ({
+            NODE_ENV: 'test',
+            DATABASE_URL: process.env.DATABASE_URL,
+            REDIS_URL: process.env.REDIS_URL,
+            JWT_SECRET: 'integration-test-jwt-secret',
+            JWT_EXPIRES_IN: '1h',
+            S3_BUCKET: 'integration-test-bucket',
+            S3_REGION: 'us-east-1',
+          }),
+        ],
       }),
       ...imports,
     ],

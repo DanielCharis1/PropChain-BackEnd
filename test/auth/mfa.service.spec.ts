@@ -11,7 +11,7 @@ describe('MfaService', () => {
   const mockConfigService = {
     get: jest.fn().mockImplementation((key: string) => {
       const config = {
-        'MFA_CODE_EXPIRY': 300,
+        MFA_CODE_EXPIRY: 300,
       };
       return config[key];
     }),
@@ -51,61 +51,54 @@ describe('MfaService', () => {
   describe('generateMfaSecret', () => {
     it('should generate MFA secret and QR code', async () => {
       const result = await service.generateMfaSecret('user123', 'test@example.com');
-      
+
       expect(result).toHaveProperty('secret');
       expect(result).toHaveProperty('qrCode');
       // secret is base32; length may vary but should be at least 32 chars
       expect(result.secret.length).toBeGreaterThanOrEqual(32);
       expect(result.qrCode).toContain('data:image/png;base64');
-      expect(mockRedisService.setex).toHaveBeenCalledWith(
-        'mfa_setup:user123',
-        300,
-        expect.any(String)
-      );
+      expect(mockRedisService.setex).toHaveBeenCalledWith('mfa_setup:user123', 300, expect.any(String));
     });
   });
 
   describe('verifyMfaSetup', () => {
     it('should verify MFA setup with valid token', async () => {
       mockRedisService.get.mockResolvedValue('JBSWY3DPEHPK3PXP');
-      
+
       // Spy on speakeasy verify method to return true
       const speakeasy = require('speakeasy');
       jest.spyOn(speakeasy.totp, 'verify').mockReturnValue(true);
 
       const result = await service.verifyMfaSetup('user123', '123456');
-      
+
       expect(result).toBe(true);
-      expect(mockRedisService.set).toHaveBeenCalledWith(
-        'mfa_secret:user123',
-        'JBSWY3DPEHPK3PXP'
-      );
+      expect(mockRedisService.set).toHaveBeenCalledWith('mfa_secret:user123', 'JBSWY3DPEHPK3PXP');
       expect(mockRedisService.del).toHaveBeenCalledWith('mfa_setup:user123');
     });
 
     it('should throw error for expired setup session', async () => {
       mockRedisService.get.mockResolvedValue(null);
-      
-      await expect(service.verifyMfaSetup('user123', '123456'))
-        .rejects
-        .toThrow('MFA setup session expired or not found');
+
+      await expect(service.verifyMfaSetup('user123', '123456')).rejects.toThrow(
+        'MFA setup session expired or not found',
+      );
     });
   });
 
   describe('isMfaEnabled', () => {
     it('should return true when MFA is enabled', async () => {
       mockRedisService.get.mockResolvedValue('JBSWY3DPEHPK3PXP');
-      
+
       const result = await service.isMfaEnabled('user123');
-      
+
       expect(result).toBe(true);
     });
 
     it('should return false when MFA is not enabled', async () => {
       mockRedisService.get.mockResolvedValue(null);
-      
+
       const result = await service.isMfaEnabled('user123');
-      
+
       expect(result).toBe(false);
     });
   });
@@ -113,17 +106,17 @@ describe('MfaService', () => {
   describe('generateBackupCodes', () => {
     it('should generate 10 backup codes', async () => {
       const result = await service.generateBackupCodes('user123');
-      
+
       expect(result).toHaveLength(10);
       result.forEach(code => {
         expect(code).toHaveLength(8);
         expect(code).toMatch(/^[A-Z0-9]+$/);
       });
-      
+
       expect(mockRedisService.setex).toHaveBeenCalledWith(
         'mfa_backup_codes:user123',
         3600, // 300 * 12
-        JSON.stringify(result)
+        JSON.stringify(result),
       );
     });
   });
@@ -133,9 +126,9 @@ describe('MfaService', () => {
       mockRedisService.get
         .mockResolvedValueOnce('JBSWY3DPEHPK3PXP') // mfa_secret
         .mockResolvedValueOnce(JSON.stringify(['ABC123', 'DEF456'])); // backup_codes
-      
+
       const result = await service.getMfaStatus('user123');
-      
+
       expect(result).toEqual({
         enabled: true,
         hasBackupCodes: true,
@@ -146,9 +139,9 @@ describe('MfaService', () => {
       mockRedisService.get
         .mockResolvedValueOnce(null) // mfa_secret
         .mockResolvedValueOnce(null); // backup_codes
-      
+
       const result = await service.getMfaStatus('user123');
-      
+
       expect(result).toEqual({
         enabled: false,
         hasBackupCodes: false,
